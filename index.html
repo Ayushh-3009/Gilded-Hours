@@ -1,0 +1,4500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gilded Hours — Your Cozy Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+/* ============================================================
+   GILDED HOURS — Black & Violet Cozy Theme
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-primary:    #0A0A0F;
+  --bg-secondary:  #111118;
+  --bg-tertiary:   #1A1A25;
+  --bg-elevated:   #222232;
+  --bg-hover:      #2A2A3A;
+  --violet-600:    #6D28D9;
+  --violet-500:    #7C3AED;
+  --violet-400:    #8B5CF6;
+  --violet-300:    #A78BFA;
+  --violet-200:    #C4B5FD;
+  --violet-100:    #DDD6FE;
+  --violet-glow:   rgba(124,58,237,0.12);
+  --violet-glow-s: rgba(124,58,237,0.25);
+  --text-primary:  #EAEAEF;
+  --text-secondary:#9898A8;
+  --text-muted:    #5A5A6E;
+  --border:        #2A2A3A;
+  --border-light:  #3A3A4A;
+  --success:       #34D399;
+  --success-dim:   rgba(52,211,153,0.15);
+  --warning:       #FBBF24;
+  --warning-dim:   rgba(251,191,36,0.15);
+  --danger:        #F87171;
+  --danger-dim:    rgba(248,113,113,0.15);
+  --blue:          #60A5FA;
+  --blue-dim:      rgba(96,165,250,0.15);
+  --pink:          #F472B6;
+  --pink-dim:      rgba(244,114,182,0.15);
+  --radius-sm:     8px;
+  --radius-md:     12px;
+  --radius-lg:     16px;
+  --radius-xl:     20px;
+  --shadow:        0 4px 24px rgba(0,0,0,0.4);
+  --shadow-glow:   0 0 24px rgba(124,58,237,0.12);
+  --transition:    200ms ease;
+  --font:          'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html { font-size: 15px; }
+body {
+  font-family: var(--font);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--violet-500); }
+
+/* ===== LAYOUT ===== */
+.app-layout { display: flex; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+  width: 240px; flex-shrink: 0;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  padding: 20px 12px;
+  position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+  transition: transform 0.3s ease;
+}
+.sidebar-brand {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; margin-bottom: 28px;
+}
+.sidebar-brand-icon {
+  width: 36px; height: 36px; border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--violet-500), var(--violet-400));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; box-shadow: 0 0 16px var(--violet-glow-s);
+}
+.sidebar-brand h1 {
+  font-size: 1.15rem; font-weight: 700;
+  background: linear-gradient(135deg, var(--violet-300), var(--violet-100));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.sidebar-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; border-radius: var(--radius-md);
+  cursor: pointer; transition: all var(--transition);
+  color: var(--text-secondary); font-size: 0.93rem; font-weight: 500;
+  border: 1px solid transparent; user-select: none;
+}
+.nav-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+.nav-item.active {
+  background: var(--violet-glow);
+  color: var(--violet-300);
+  border-color: rgba(124,58,237,0.2);
+  box-shadow: var(--shadow-glow);
+}
+.nav-item .nav-icon { font-size: 1.2rem; width: 24px; text-align: center; }
+.nav-item .nav-badge {
+  margin-left: auto; background: var(--violet-500);
+  color: white; font-size: 0.7rem; font-weight: 700;
+  padding: 1px 7px; border-radius: 10px;
+}
+
+.main-content {
+  flex: 1; margin-left: 240px;
+  padding: 32px 40px;
+  max-width: 1200px;
+  min-height: 100vh;
+}
+
+/* ===== PAGE HEADERS ===== */
+.page-header { margin-bottom: 28px; }
+.page-header h2 {
+  font-size: 1.75rem; font-weight: 700; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 12px;
+}
+.page-header p { color: var(--text-secondary); font-size: 0.9rem; }
+.page-header-actions { display: flex; gap: 10px; margin-top: 16px; }
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px; transition: all var(--transition);
+}
+.card:hover { border-color: var(--border-light); }
+.card-glow {
+  box-shadow: var(--shadow-glow);
+  border-color: rgba(124,58,237,0.18);
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.card-header h3 { font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.card-header .card-icon { color: var(--violet-400); }
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 9px 18px; border-radius: var(--radius-md);
+  font-family: var(--font); font-size: 0.87rem; font-weight: 600;
+  cursor: pointer; border: 1px solid transparent;
+  transition: all var(--transition); user-select: none;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--violet-500), var(--violet-600));
+  color: white; box-shadow: 0 2px 12px rgba(124,58,237,0.3);
+}
+.btn-primary:hover { box-shadow: 0 4px 20px rgba(124,58,237,0.45); filter: brightness(1.1); }
+.btn-secondary {
+  background: var(--bg-tertiary); color: var(--text-primary);
+  border-color: var(--border);
+}
+.btn-secondary:hover { background: var(--bg-hover); border-color: var(--border-light); }
+.btn-ghost { background: transparent; color: var(--text-secondary); }
+.btn-ghost:hover { background: var(--bg-hover); color: var(--text-primary); }
+.btn-danger { background: var(--danger-dim); color: var(--danger); }
+.btn-danger:hover { background: var(--danger); color: white; }
+.btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: var(--radius-sm); }
+.btn-icon {
+  width: 36px; height: 36px; padding: 0;
+  border-radius: var(--radius-md); display: flex;
+  align-items: center; justify-content: center;
+}
+
+/* ===== FORM INPUTS ===== */
+.input, .textarea, .select {
+  width: 100%; padding: 10px 14px;
+  background: var(--bg-tertiary); border: 1px solid var(--border);
+  border-radius: var(--radius-md); color: var(--text-primary);
+  font-family: var(--font); font-size: 0.9rem;
+  transition: all var(--transition); outline: none;
+}
+.input:focus, .textarea:focus, .select:focus {
+  border-color: var(--violet-500);
+  box-shadow: 0 0 0 3px var(--violet-glow);
+}
+.input::placeholder, .textarea::placeholder { color: var(--text-muted); }
+.textarea { resize: vertical; min-height: 100px; line-height: 1.7; }
+.select { cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239898A8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+  padding-right: 36px;
+}
+.form-group { margin-bottom: 16px; }
+.form-label {
+  display: block; font-size: 0.82rem; font-weight: 600;
+  color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.form-row { display: flex; gap: 12px; }
+.form-row > * { flex: 1; }
+
+/* ===== CHECKBOX ===== */
+.checkbox-wrapper {
+  display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none;
+}
+.custom-checkbox {
+  width: 22px; height: 22px; border-radius: 6px;
+  border: 2px solid var(--border-light); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 13px; color: transparent;
+}
+.custom-checkbox.checked {
+  background: linear-gradient(135deg, var(--violet-500), var(--violet-400));
+  border-color: var(--violet-500);
+  color: white; box-shadow: 0 0 12px var(--violet-glow-s);
+  animation: checkPop 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes checkPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+.custom-checkbox.priority-high { border-color: var(--danger); }
+.custom-checkbox.priority-medium { border-color: var(--warning); }
+.custom-checkbox.priority-low { border-color: var(--blue); }
+
+/* ===== CHIPS / TAGS ===== */
+.chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 20px; font-size: 0.75rem;
+  font-weight: 600; white-space: nowrap;
+}
+.chip-violet { background: var(--violet-glow); color: var(--violet-300); }
+.chip-success { background: var(--success-dim); color: var(--success); }
+.chip-warning { background: var(--warning-dim); color: var(--warning); }
+.chip-danger { background: var(--danger-dim); color: var(--danger); }
+.chip-blue { background: var(--blue-dim); color: var(--blue); }
+.chip-pink { background: var(--pink-dim); color: var(--pink); }
+
+/* ===== TABS ===== */
+.tabs {
+  display: flex; gap: 4px; background: var(--bg-tertiary);
+  padding: 4px; border-radius: var(--radius-md); margin-bottom: 20px;
+  border: 1px solid var(--border);
+}
+.tab {
+  padding: 8px 16px; border-radius: var(--radius-sm);
+  cursor: pointer; font-size: 0.85rem; font-weight: 500;
+  color: var(--text-secondary); transition: all var(--transition);
+  user-select: none; white-space: nowrap;
+}
+.tab:hover { color: var(--text-primary); }
+.tab.active {
+  background: var(--violet-500); color: white;
+  box-shadow: 0 2px 8px rgba(124,58,237,0.3);
+}
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(4px); z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal {
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  border-radius: var(--radius-xl); width: 100%; max-width: 540px;
+  max-height: 85vh; overflow-y: auto; box-shadow: var(--shadow);
+  animation: slideUp 0.25s ease;
+}
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+}
+.modal-header h3 { font-size: 1.1rem; font-weight: 700; }
+.modal-body { padding: 24px; }
+.modal-footer {
+  display: flex; justify-content: flex-end; gap: 10px;
+  padding: 16px 24px; border-top: 1px solid var(--border);
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center; padding: 48px 20px;
+  color: var(--text-muted);
+}
+.empty-state .empty-icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.5; }
+.empty-state h4 { color: var(--text-secondary); margin-bottom: 6px; }
+.empty-state p { font-size: 0.88rem; max-width: 300px; margin: 0 auto; }
+
+/* ===== TASK ITEM ===== */
+.task-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 16px; border-radius: var(--radius-md);
+  border: 1px solid var(--border); margin-bottom: 8px;
+  transition: all var(--transition); cursor: default;
+  background: var(--bg-secondary);
+}
+.task-item:hover { border-color: var(--border-light); background: var(--bg-tertiary); }
+.task-item.completed { opacity: 0.5; }
+.task-item.completed .task-title { text-decoration: line-through; }
+.task-content { flex: 1; min-width: 0; }
+.task-title { font-weight: 500; font-size: 0.95rem; margin-bottom: 4px; word-break: break-word; }
+.task-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.task-meta span { font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+.task-actions { display: flex; gap: 4px; opacity: 0; transition: opacity var(--transition); }
+.task-item:hover .task-actions { opacity: 1; }
+.subtask-list { margin-top: 8px; padding-left: 4px; }
+.subtask-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 0; font-size: 0.88rem;
+}
+.subtask-item .custom-checkbox { width: 18px; height: 18px; border-radius: 4px; font-size: 10px; }
+.subtask-item.completed span { text-decoration: line-through; color: var(--text-muted); }
+.subtask-add {
+  display: flex; align-items: center; gap: 6px; margin-top: 4px;
+  color: var(--text-muted); font-size: 0.82rem; cursor: pointer;
+  transition: color var(--transition);
+}
+.subtask-add:hover { color: var(--violet-400); }
+
+/* ===== PLANNER / TIMELINE ===== */
+.timeline { position: relative; }
+.time-slot {
+  display: flex; min-height: 56px;
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+}
+.time-slot:hover { background: rgba(124,58,237,0.04); }
+.time-label {
+  width: 72px; flex-shrink: 0; padding: 8px 12px 8px 0;
+  font-size: 0.78rem; color: var(--text-muted);
+  text-align: right; font-weight: 500;
+  border-right: 1px solid var(--border);
+}
+.time-slot-content {
+  flex: 1; padding: 4px 8px; position: relative; min-height: 56px;
+}
+.time-block {
+  padding: 8px 12px; border-radius: var(--radius-sm);
+  margin: 2px 0; font-size: 0.85rem; font-weight: 500;
+  cursor: grab; transition: all var(--transition);
+  border-left: 3px solid;
+}
+.time-block:active { cursor: grabbing; transform: scale(1.02); }
+.time-block-violet { background: var(--violet-glow); border-color: var(--violet-400); color: var(--violet-200); }
+.time-block-blue { background: var(--blue-dim); border-color: var(--blue); color: var(--blue); }
+.time-block-pink { background: var(--pink-dim); border-color: var(--pink); color: var(--pink); }
+.time-block-success { background: var(--success-dim); border-color: var(--success); color: var(--success); }
+.time-block-warning { background: var(--warning-dim); border-color: var(--warning); color: var(--warning); }
+.current-time-line {
+  position: absolute; left: 72px; right: 0; height: 2px;
+  background: var(--violet-500); z-index: 10;
+  box-shadow: 0 0 8px var(--violet-glow-s);
+}
+.current-time-dot {
+  position: absolute; left: 66px; width: 12px; height: 12px;
+  border-radius: 50%; background: var(--violet-500);
+  transform: translateY(-5px); z-index: 11;
+  box-shadow: 0 0 12px var(--violet-glow-s);
+}
+
+/* ===== HABIT TRACKER ===== */
+.habit-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px; border-radius: var(--radius-md);
+  border: 1px solid var(--border); margin-bottom: 8px;
+  background: var(--bg-secondary); transition: all var(--transition);
+}
+.habit-item:hover { border-color: var(--border-light); }
+.habit-icon {
+  width: 40px; height: 40px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; background: var(--violet-glow);
+}
+.habit-info { flex: 1; }
+.habit-name { font-weight: 600; font-size: 0.95rem; }
+.habit-streak { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+.habit-check-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 2px solid var(--border-light); background: transparent;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; color: var(--text-muted);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.habit-check-btn:hover { border-color: var(--violet-400); color: var(--violet-400); }
+.habit-check-btn.checked {
+  background: linear-gradient(135deg, var(--violet-500), var(--violet-400));
+  border-color: var(--violet-500); color: white;
+  box-shadow: 0 0 16px var(--violet-glow-s);
+  animation: checkPop 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.habit-progress-bar {
+  height: 4px; background: var(--bg-tertiary); border-radius: 2px;
+  margin-top: 6px; overflow: hidden;
+}
+.habit-progress-fill {
+  height: 100%; border-radius: 2px;
+  background: linear-gradient(90deg, var(--violet-500), var(--violet-300));
+  transition: width 0.5s ease;
+}
+
+/* Heatmap */
+.heatmap { display: flex; flex-direction: column; gap: 8px; }
+.heatmap-grid { display: flex; gap: 3px; flex-wrap: wrap; }
+.heatmap-cell {
+  width: 16px; height: 16px; border-radius: 3px;
+  background: var(--bg-tertiary); transition: all var(--transition);
+}
+.heatmap-cell.level-1 { background: rgba(124,58,237,0.2); }
+.heatmap-cell.level-2 { background: rgba(124,58,237,0.4); }
+.heatmap-cell.level-3 { background: rgba(124,58,237,0.6); }
+.heatmap-cell.level-4 { background: var(--violet-500); box-shadow: 0 0 6px var(--violet-glow); }
+.heatmap-cell.future { opacity: 0.3; }
+.heatmap-label { font-size: 0.72rem; color: var(--text-muted); }
+
+/* ===== ROUTINES ===== */
+.routine-card {
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 20px; background: var(--bg-secondary);
+  margin-bottom: 12px; transition: all var(--transition);
+}
+.routine-card:hover { border-color: var(--border-light); }
+.routine-step {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; border-radius: var(--radius-md);
+  margin-bottom: 6px; transition: all var(--transition);
+  border: 1px solid transparent;
+}
+.routine-step.active-step {
+  background: var(--violet-glow);
+  border-color: rgba(124,58,237,0.2);
+  box-shadow: var(--shadow-glow);
+}
+.routine-step.completed-step { opacity: 0.5; }
+.routine-step .step-number {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--bg-tertiary); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem; font-weight: 700; color: var(--text-muted);
+  flex-shrink: 0;
+}
+.routine-step.active-step .step-number {
+  background: var(--violet-500); border-color: var(--violet-500); color: white;
+}
+.routine-step.completed-step .step-number {
+  background: var(--success-dim); border-color: var(--success); color: var(--success);
+}
+.step-duration { font-size: 0.78rem; color: var(--text-muted); margin-left: auto; }
+
+/* ===== JOURNAL ===== */
+.mood-selector { display: flex; gap: 8px; flex-wrap: wrap; }
+.mood-btn {
+  width: 48px; height: 48px; border-radius: var(--radius-md);
+  border: 2px solid var(--border); background: var(--bg-tertiary);
+  cursor: pointer; font-size: 1.5rem; display: flex;
+  align-items: center; justify-content: center;
+  transition: all var(--transition);
+}
+.mood-btn:hover { border-color: var(--violet-400); transform: scale(1.1); }
+.mood-btn.selected {
+  border-color: var(--violet-500);
+  background: var(--violet-glow);
+  box-shadow: 0 0 16px var(--violet-glow-s);
+  transform: scale(1.1);
+}
+
+.journal-calendar { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
+.journal-cal-day {
+  aspect-ratio: 1; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.82rem; cursor: pointer;
+  transition: all var(--transition); color: var(--text-muted);
+}
+.journal-cal-day:hover { background: var(--bg-hover); }
+.journal-cal-day.has-entry {
+  background: var(--violet-glow); color: var(--violet-300); font-weight: 600;
+}
+.journal-cal-day.today {
+  border: 1px solid var(--violet-500);
+  color: var(--violet-300);
+}
+.journal-cal-day.other-month { opacity: 0.3; }
+
+/* ===== DASHBOARD GRID ===== */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+.dashboard-card { padding: 24px; }
+.stat-value {
+  font-size: 2rem; font-weight: 700;
+  background: linear-gradient(135deg, var(--violet-300), var(--violet-100));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.stat-label { font-size: 0.82rem; color: var(--text-muted); margin-top: 2px; }
+
+/* ===== DRAG-OVER STYLES ===== */
+.drag-over { background: var(--violet-glow) !important; outline: 2px dashed var(--violet-400); outline-offset: -2px; }
+
+/* ===== PROGRESS RING ===== */
+.progress-ring { transform: rotate(-90deg); }
+
+/* ===== RESPONSIVE ===== */
+.mobile-nav {
+  display: none; position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--bg-secondary); border-top: 1px solid var(--border);
+  padding: 8px 4px; z-index: 100;
+  justify-content: space-around;
+}
+.mobile-nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 6px 12px; border-radius: var(--radius-sm);
+  cursor: pointer; font-size: 0.68rem; color: var(--text-muted);
+  transition: all var(--transition); user-select: none;
+}
+.mobile-nav-item .nav-icon { font-size: 1.3rem; }
+.mobile-nav-item.active { color: var(--violet-400); }
+
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main-content { margin-left: 0; padding: 20px 16px 80px; }
+  .mobile-nav { display: flex; }
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .form-row { flex-direction: column; }
+  .mobile-menu-btn { display: flex !important; }
+}
+@media (min-width: 769px) {
+  .mobile-menu-btn { display: none !important; }
+}
+
+/* ===== ANIMATION UTILITIES ===== */
+.fade-in { animation: fadeIn 0.3s ease; }
+.slide-in { animation: slideUp 0.3s ease; }
+
+/* Tooltip */
+.tooltip { position: relative; }
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute; bottom: calc(100% + 8px); left: 50%;
+  transform: translateX(-50%); padding: 4px 10px;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font-size: 0.75rem;
+  color: var(--text-secondary); white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: opacity var(--transition);
+}
+.tooltip:hover::after { opacity: 1; }
+
+/* Search */
+.search-bar {
+  position: relative;
+}
+.search-bar .search-icon {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--text-muted); font-size: 0.9rem;
+}
+.search-bar .input { padding-left: 36px; }
+
+/* ===== AUTHENTICATION & USER PROFILE ===== */
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 15%, rgba(124, 58, 237, 0.16) 0%, rgba(10, 10, 15, 1) 75%);
+}
+
+.auth-ambient-glow {
+  position: absolute;
+  width: 550px;
+  height: 550px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%);
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  filter: blur(50px);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--bg-secondary);
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  border-radius: var(--radius-xl);
+  padding: 36px 32px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7), 0 0 32px rgba(124, 58, 237, 0.18);
+  position: relative;
+  z-index: 2;
+  animation: slideUp 0.35s ease;
+}
+
+.auth-logo-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.auth-logo-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--violet-500), var(--violet-400));
+  font-size: 28px;
+  box-shadow: 0 0 24px var(--violet-glow-s);
+  margin-bottom: 12px;
+}
+
+.auth-title {
+  font-size: 1.65rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--violet-200), #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 6px;
+}
+
+.auth-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}
+
+.auth-tabs-nav {
+  display: flex;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  margin-bottom: 22px;
+  border: 1px solid var(--border);
+}
+
+.auth-tab-btn {
+  flex: 1;
+  text-align: center;
+  padding: 9px 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+  border: none;
+  background: transparent;
+}
+
+.auth-tab-btn.active {
+  background: var(--violet-500);
+  color: white;
+  box-shadow: 0 2px 10px rgba(124, 58, 237, 0.35);
+}
+
+.auth-alert-box {
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.84rem;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: fadeIn 0.2s ease;
+}
+
+.auth-alert-error {
+  background: var(--danger-dim);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  color: #fca5a5;
+}
+
+.auth-alert-success {
+  background: var(--success-dim);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  color: #6ee7b7;
+}
+
+.auth-demo-box {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border);
+  text-align: center;
+}
+
+.avatar-selector-grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.avatar-option-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg-tertiary);
+  transition: all var(--transition);
+}
+
+.avatar-option-btn:hover {
+  border-color: var(--violet-400);
+}
+
+.avatar-option-btn.selected {
+  border-color: var(--violet-500);
+  background: var(--violet-glow);
+  box-shadow: 0 0 12px var(--violet-glow-s);
+  transform: scale(1.08);
+}
+
+/* User Profile Sidebar & Mobile */
+.user-sidebar-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: rgba(26, 26, 37, 0.6);
+  border: 1px solid var(--border);
+}
+
+.user-sidebar-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--violet-600), var(--violet-400));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  box-shadow: 0 0 12px var(--violet-glow-s);
+  flex-shrink: 0;
+}
+
+.user-sidebar-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-sidebar-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-sidebar-handle {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-sidebar-logout {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-sidebar-logout:hover {
+  color: var(--danger);
+  background: var(--danger-dim);
+}
+
+.user-sidebar-profile {
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.user-sidebar-profile:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-light);
+}
+
+.user-sidebar-gear {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.user-sidebar-gear:hover {
+  color: var(--violet-300);
+  background: var(--violet-glow);
+}
+
+.mobile-top-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  margin: -20px -16px 20px -16px;
+}
+
+@media (max-width: 768px) {
+  .mobile-top-bar {
+    display: flex;
+  }
+}
+
+/* ===== REMINDERS & TOASTS ===== */
+.reminder-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  margin-bottom: 10px;
+  transition: all var(--transition);
+}
+.reminder-item:hover {
+  border-color: var(--border-light);
+}
+.reminder-item.due {
+  border-color: var(--warning);
+  background: rgba(251, 191, 36, 0.05);
+  box-shadow: 0 0 16px rgba(251, 191, 36, 0.15);
+}
+.reminder-item.completed {
+  opacity: 0.55;
+}
+.reminder-item.completed .reminder-title {
+  text-decoration: line-through;
+}
+.reminder-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.reminder-info {
+  flex: 1;
+  min-width: 0;
+}
+.reminder-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+.reminder-note {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+.reminder-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* Floating Due Reminder Toast */
+.reminder-toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 380px;
+  width: calc(100% - 48px);
+  pointer-events: none;
+}
+.reminder-toast {
+  pointer-events: auto;
+  background: var(--bg-elevated);
+  border: 1px solid var(--violet-400);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.7), 0 0 24px var(--violet-glow-s);
+  animation: slideUp 0.3s ease;
+  position: relative;
+}
+.reminder-toast-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.reminder-toast-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--violet-200);
+}
+.reminder-toast-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* ===== PAST ACTIVITY RECORDS & TIMELINE ===== */
+.activity-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.activity-stat-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+  transition: all var(--transition);
+}
+.activity-stat-card:hover {
+  border-color: rgba(124, 58, 237, 0.4);
+}
+.activity-stat-num {
+  font-size: 1.8rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--violet-300), #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.activity-stat-label {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+.timeline-stream {
+  position: relative;
+  padding-left: 24px;
+  margin-top: 16px;
+}
+.timeline-stream::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 7px;
+  width: 2px;
+  background: var(--border);
+}
+.timeline-entry {
+  position: relative;
+  margin-bottom: 20px;
+  animation: fadeIn 0.25s ease;
+}
+.timeline-dot {
+  position: absolute;
+  left: -24px;
+  top: 12px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 3px solid var(--violet-500);
+  box-shadow: 0 0 10px var(--violet-glow-s);
+  z-index: 2;
+}
+.timeline-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  transition: all var(--transition);
+}
+.timeline-card:hover {
+  border-color: var(--border-light);
+  background: var(--bg-tertiary);
+}
+.timeline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.timeline-title {
+  font-weight: 600;
+  font-size: 0.92rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.timeline-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.timeline-details {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-top: 4px;
+}
+.timeline-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+/* ===== PROFILE CUSTOMIZATION & CUSTOM AVATARS ===== */
+.user-sidebar-profile {
+  cursor: pointer;
+}
+.user-sidebar-profile:hover {
+  background: rgba(34, 34, 50, 0.95);
+  border-color: rgba(124, 58, 237, 0.45);
+  box-shadow: 0 0 16px rgba(124, 58, 237, 0.15);
+}
+
+.avatar-preview-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 14px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+}
+
+.avatar-preview-img-wrapper {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--violet-600), var(--violet-400));
+  box-shadow: 0 0 20px var(--violet-glow-s);
+  border: 2px solid rgba(124, 58, 237, 0.5);
+  overflow: hidden;
+  font-size: 2rem;
+}
+
+.avatar-preview-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-custom-input-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-primary);
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+}
+
+.avatar-custom-input-tab {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+}
+
+.avatar-custom-input-tab.active {
+  background: var(--violet-500);
+  color: white;
+}
+
+.theme-swatches-grid {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.theme-swatch-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all var(--transition);
+  position: relative;
+}
+
+.theme-swatch-btn:hover {
+  transform: scale(1.15);
+}
+
+.theme-swatch-btn.selected {
+  border-color: #ffffff;
+  transform: scale(1.18);
+  box-shadow: 0 0 14px currentColor;
+}
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+
+/* ============================================================
+   GILDED HOURS — React Application
+   ============================================================ */
+const { useState, useEffect, useRef, useCallback, useMemo, Fragment } = React;
+
+// ===== UTILITIES =====
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
+const today = () => new Date().toISOString().slice(0, 10);
+const fmtDate = (d) => {
+  if (!d) return '';
+  const dt = new Date(d + 'T00:00:00');
+  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+};
+const fmtDateFull = (d) => {
+  if (!d) return '';
+  const dt = new Date(d + 'T00:00:00');
+  return dt.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+};
+const dayName = (d) => new Date(d + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short' });
+const isToday = (d) => d === today();
+const isFuture = (d) => d > today();
+const isPast = (d) => d < today();
+const addDays = (d, n) => {
+  const dt = new Date(d + 'T00:00:00');
+  dt.setDate(dt.getDate() + n);
+  return dt.toISOString().slice(0, 10);
+};
+const daysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
+const getMonthDays = (y, m) => {
+  const firstDay = new Date(y, m, 1).getDay();
+  const totalDays = daysInMonth(y, m);
+  const days = [];
+  // Previous month padding
+  const prevMonthDays = daysInMonth(y, m - 1 < 0 ? 11 : m - 1);
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const pm = m - 1 < 0 ? 11 : m - 1;
+    const py = m - 1 < 0 ? y - 1 : y;
+    const d = prevMonthDays - i;
+    days.push({ day: d, date: `${py}-${String(pm+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`, otherMonth: true });
+  }
+  for (let i = 1; i <= totalDays; i++) {
+    days.push({ day: i, date: `${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`, otherMonth: false });
+  }
+  // Next month padding
+  const remaining = 42 - days.length;
+  for (let i = 1; i <= remaining; i++) {
+    const nm = m + 1 > 11 ? 0 : m + 1;
+    const ny = m + 1 > 11 ? y + 1 : y;
+    days.push({ day: i, date: `${ny}-${String(nm+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`, otherMonth: true });
+  }
+  return days;
+};
+const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const weekDays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+// Priority info
+const PRIORITIES = { high: { label: 'High', color: 'danger', icon: '🔴' }, medium: { label: 'Medium', color: 'warning', icon: '🟡' }, low: { label: 'Low', color: 'blue', icon: '🔵' }, none: { label: 'None', color: 'violet', icon: '⚪' } };
+// Category colors
+const CATEGORIES = {
+  work:     { label: 'Work',     color: 'violet', icon: '💼' },
+  personal: { label: 'Personal', color: 'blue',   icon: '🏠' },
+  health:   { label: 'Health',   color: 'success', icon: '💪' },
+  learning: { label: 'Learning', color: 'warning', icon: '📚' },
+  creative: { label: 'Creative', color: 'pink',   icon: '🎨' },
+};
+const BLOCK_COLORS = ['violet','blue','pink','success','warning'];
+const MOODS = [
+  { emoji: '😊', label: 'Happy', value: 'happy' },
+  { emoji: '😌', label: 'Calm', value: 'calm' },
+  { emoji: '😐', label: 'Neutral', value: 'neutral' },
+  { emoji: '😔', label: 'Sad', value: 'sad' },
+  { emoji: '😤', label: 'Stressed', value: 'stressed' },
+  { emoji: '🥱', label: 'Tired', value: 'tired' },
+  { emoji: '🥰', label: 'Grateful', value: 'grateful' },
+  { emoji: '🔥', label: 'Motivated', value: 'motivated' },
+];
+const PROMPTS = [
+  "What made you smile today?",
+  "What's one thing you learned recently?",
+  "What are you looking forward to this week?",
+  "Describe your ideal day.",
+  "What's a challenge you overcame recently?",
+  "What's something you're proud of?",
+  "What would you tell your past self?",
+  "What's a small win from today?",
+  "How did you take care of yourself today?",
+  "What are three things you're grateful for right now?",
+];
+const getRandomPrompt = () => PROMPTS[Math.floor(Math.random() * PROMPTS.length)];
+
+// ===== LOCAL STORAGE & AUTH REPOSITORY =====
+const AUTH_USERS_KEY = 'gh_users_registry';
+const AUTH_ACTIVE_USER_KEY = 'gh_active_user';
+const KEYS = { tasks: 'gh_tasks', habits: 'gh_habits', routines: 'gh_routines', journal: 'gh_journal', blocks: 'gh_blocks', reminders: 'gh_reminders', activity: 'gh_activity' };
+
+const load = (key) => { try { return JSON.parse(localStorage.getItem(key)) || null; } catch { return null; } };
+const save = (key, data) => localStorage.setItem(key, JSON.stringify(data));
+
+const getUserKey = (userId, type) => `gh_user_${userId}_${type}`;
+
+const getRegisteredUsers = () => {
+  try {
+    const raw = localStorage.getItem(AUTH_USERS_KEY);
+    if (raw) {
+      const users = JSON.parse(raw);
+      return users.map(u => ({
+        bio: '',
+        affirmation: '',
+        themeAccent: '#7C3AED',
+        ...u
+      }));
+    }
+  } catch (e) {}
+  // Default demo user so testing is immediate and seamless
+  const defaultUsers = [
+    {
+      id: 'user_demo',
+      name: 'Aadhanya',
+      username: 'demo',
+      email: 'demo@gildedhours.com',
+      password: 'password123',
+      avatar: '🌸',
+      bio: 'Architect of calm days & mindful thoughts',
+      affirmation: 'Focus on progress, not perfection.',
+      themeAccent: '#7C3AED',
+      createdAt: td
+    }
+  ];
+  try {
+    localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(defaultUsers));
+  } catch (e) {}
+  return defaultUsers;
+};
+
+const saveRegisteredUsers = (users) => {
+  localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(users));
+};
+
+const getActiveUser = () => {
+  try {
+    const raw = localStorage.getItem(AUTH_ACTIVE_USER_KEY);
+    if (!raw) return null;
+    const u = JSON.parse(raw);
+    return {
+      bio: '',
+      affirmation: '',
+      themeAccent: '#7C3AED',
+      ...u
+    };
+  } catch (e) {
+    return null;
+  }
+};
+
+function useStore(key, initial) {
+  const [data, setData] = useState(() => load(key) ?? initial);
+  useEffect(() => { save(key, data); }, [key, data]);
+  return [data, setData];
+}
+
+// ===== SAMPLE DATA & FACTORIES =====
+const td = today();
+const tmr = addDays(td, 1);
+const y1 = addDays(td, -1);
+const y2 = addDays(td, -2);
+const y3 = addDays(td, -3);
+const nxt = addDays(td, 3);
+
+const buildHabitCheckins = (daysBack, rate) => {
+  const checkins = {};
+  for (let i = 0; i < daysBack; i++) {
+    const d = addDays(td, -i);
+    if (Math.random() < rate) checkins[d] = true;
+  }
+  return checkins;
+};
+
+const playCozyChime = () => {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const now = ctx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6 cozy chime
+    notes.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+      gain.gain.setValueAtTime(0, now + idx * 0.12);
+      gain.gain.linearRampToValueAtTime(0.18, now + idx * 0.12 + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.9);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + idx * 0.12);
+      osc.stop(now + idx * 0.12 + 0.95);
+    });
+  } catch (e) {
+    // AudioContext blocked until user gesture or not supported
+  }
+};
+
+const getStarterTasks = () => [];
+const getStarterBlocks = () => [];
+const getStarterHabits = () => [];
+const getStarterRoutines = () => [];
+const getStarterJournal = () => [];
+const getStarterReminders = () => [];
+const getStarterActivity = () => [];
+
+// Definitions of fake starter items to reliably purge from stored state
+const FAKE_TASK_TITLES = [
+  'Review quarterly report',
+  'Morning yoga session',
+  'Read 30 pages of current book',
+  'Sketch logo concepts',
+  'Grocery shopping',
+  'Team standup meeting',
+  'Plan weekend trip',
+  'Update portfolio website'
+];
+
+const FAKE_BLOCK_TITLES = [
+  'Deep Work — Report',
+  'Deep Work - Report',
+  'Yoga & Stretch',
+  'Reading Time',
+  'Sketch Session',
+  'Email & Comms'
+];
+
+const FAKE_HABIT_NAMES = [
+  'Meditate',
+  'Exercise',
+  'Read',
+  'Drink Water',
+  'Journal'
+];
+
+const FAKE_ROUTINE_NAMES = [
+  'Morning Routine',
+  'Evening Wind-Down'
+];
+
+const FAKE_REMINDER_TITLES = [
+  'Afternoon stretch & hydration break',
+  'Review quarterly report projections',
+  'Evening wind-down & journal entry',
+  'Plan tomorrow’s focus blocks',
+  'Plan tomorrow\'s focus blocks'
+];
+
+const isFakeTask = t => !t || !t.title || FAKE_TASK_TITLES.includes(t.title);
+const isFakeBlock = b => !b || !b.title || FAKE_BLOCK_TITLES.includes(b.title);
+const isFakeHabit = h => !h || !h.name || (FAKE_HABIT_NAMES.includes(h.name) && (Object.keys(h.checkins || {}).length > 5 || h.createdAt?.includes('-45') || h.createdAt?.includes('-30')));
+const isFakeRoutine = r => !r || !r.name || FAKE_ROUTINE_NAMES.includes(r.name);
+const isFakeJournal = j => !j || !j.content || j.content.includes('Finished a big project at work') || j.content.includes('A quiet, productive day') || j.content.includes('Woke up early and knocked out my morning routine');
+const isFakeReminder = r => !r || !r.title || FAKE_REMINDER_TITLES.includes(r.title);
+
+const isFakeActivity = a => {
+  if (!a || !a.title) return true;
+  const text = (a.title + ' ' + (a.details || '')).toLowerCase();
+  const fakeKeywords = [
+    'quarterly report', 'yoga session', 'yoga & stretch', 'deep work',
+    'sketch logo', 'grocery shopping', 'team standup', 'weekend trip',
+    'portfolio website', 'reading time', 'sketch session', 'email & comms',
+    'morning meditation', 'read 30 pages', 'evening wind-down', 'morning routine',
+    'afternoon stretch', 'hydration break', 'finished a big project', 'supportive team',
+    'prepare clothes for tomorrow', 'review daily plan', 'wake up & stretch',
+    '8-day meditation streak', '12-day reading streak'
+  ];
+  return fakeKeywords.some(kw => text.includes(kw));
+};
+
+// Global purge function that thoroughly removes fake data across all stores for a user
+const purgeAllFakeUserData = (userId) => {
+  if (!userId) return;
+  const sanitize = (type, isFakeFn) => {
+    const k = getUserKey(userId, type);
+    const existing = load(k);
+    if (Array.isArray(existing)) {
+      const clean = existing.filter(x => !isFakeFn(x));
+      save(k, clean);
+      return clean;
+    }
+    save(k, []);
+    return [];
+  };
+
+  sanitize('tasks', isFakeTask);
+  sanitize('blocks', isFakeBlock);
+  sanitize('habits', isFakeHabit);
+  sanitize('routines', isFakeRoutine);
+  sanitize('journal', isFakeJournal);
+  sanitize('reminders', isFakeReminder);
+  sanitize('activity', isFakeActivity);
+};
+
+// Immediately purge legacy un-scoped and demo fake data upon script execution
+try {
+  localStorage.removeItem('gh_tasks');
+  localStorage.removeItem('gh_blocks');
+  localStorage.removeItem('gh_habits');
+  localStorage.removeItem('gh_routines');
+  localStorage.removeItem('gh_journal');
+  localStorage.removeItem('gh_reminders');
+  localStorage.removeItem('gh_activity');
+  purgeAllFakeUserData('user_demo');
+  const storedActive = load(AUTH_ACTIVE_USER_KEY);
+  if (storedActive?.id) {
+    purgeAllFakeUserData(storedActive.id);
+  }
+} catch (e) {}
+
+
+const SAMPLE_TASKS = getStarterTasks();
+const SAMPLE_BLOCKS = getStarterBlocks();
+const SAMPLE_HABITS = getStarterHabits();
+const SAMPLE_ROUTINES = getStarterRoutines();
+const SAMPLE_JOURNAL = getStarterJournal();
+const SAMPLE_REMINDERS = getStarterReminders();
+const SAMPLE_ACTIVITY = getStarterActivity();
+
+// ===== COMMON COMPONENTS =====
+
+// Modal
+function Modal({ open, onClose, title, children, footer, wide }) {
+  if (!open) return null;
+  return ReactDOM.createPortal(
+    <div className="modal-overlay" onClick={onClose}>
+      <div className={`modal ${wide ? 'wide' : ''}`} style={wide ? {maxWidth:640} : {}} onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3>{title}</h3>
+          <button className="btn btn-ghost btn-icon" onClick={onClose}>✕</button>
+        </div>
+        <div className="modal-body">{children}</div>
+        {footer && <div className="modal-footer">{footer}</div>}
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+// Empty state
+function EmptyState({ icon, title, desc, action }) {
+  return (
+    <div className="empty-state fade-in">
+      <div className="empty-icon">{icon}</div>
+      <h4>{title}</h4>
+      <p>{desc}</p>
+      {action && <div style={{marginTop:16}}>{action}</div>}
+    </div>
+  );
+}
+
+// Animated checkbox
+function Checkbox({ checked, onChange, priority, size }) {
+  const sz = size || 22;
+  const cls = `custom-checkbox ${checked ? 'checked' : ''} ${priority ? `priority-${priority}` : ''}`;
+  return (
+    <div className={cls} style={{width:sz,height:sz}} onClick={e => { e.stopPropagation(); onChange(!checked); }}>
+      {checked ? '✓' : ''}
+    </div>
+  );
+}
+
+// Progress ring (SVG)
+function ProgressRing({ pct, size, stroke, color }) {
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const offset = c - (pct / 100) * c;
+  return (
+    <svg className="progress-ring" width={size} height={size}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--bg-tertiary)" strokeWidth={stroke} />
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color || 'var(--violet-400)'} strokeWidth={stroke}
+        strokeDasharray={c} strokeDashoffset={offset} strokeLinecap="round"
+        style={{transition:'stroke-dashoffset 0.5s ease'}} />
+    </svg>
+  );
+}
+
+// UserAvatar handles both custom images (data URL or web URL) and text/emoji avatars
+function UserAvatar({ avatar, size = 36, alt = 'Avatar', style = {} }) {
+  const isImage = avatar && (avatar.startsWith('data:image/') || avatar.startsWith('http://') || avatar.startsWith('https://') || avatar.startsWith('/'));
+
+  if (isImage) {
+    return (
+      <img
+        src={avatar}
+        alt={alt}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: '50%',
+          objectFit: 'cover',
+          border: '2px solid rgba(124, 58, 237, 0.4)',
+          boxShadow: '0 0 10px var(--violet-glow-s)',
+          flexShrink: 0,
+          ...style
+        }}
+      />
+    );
+  }
+
+  return (
+    <div
+      className="user-sidebar-avatar"
+      style={{
+        width: size,
+        height: size,
+        fontSize: size ? `${Math.round(size * 0.46)}px` : '1.15rem',
+        borderRadius: '50%',
+        flexShrink: 0,
+        ...style
+      }}
+    >
+      {avatar || '✨'}
+    </div>
+  );
+}
+
+// Cozy theme color accents
+const THEME_ACCENTS = [
+  { id: 'violet', label: 'Royal Violet', color: '#7C3AED', glow: 'rgba(124, 58, 237, 0.25)', glowSoft: 'rgba(124, 58, 237, 0.12)' },
+  { id: 'indigo', label: 'Mystic Indigo', color: '#6366F1', glow: 'rgba(99, 102, 241, 0.25)', glowSoft: 'rgba(99, 102, 241, 0.12)' },
+  { id: 'emerald', label: 'Emerald Sage', color: '#10B981', glow: 'rgba(16, 185, 129, 0.25)', glowSoft: 'rgba(16, 185, 129, 0.12)' },
+  { id: 'rose', label: 'Rose Gold', color: '#EC4899', glow: 'rgba(236, 72, 153, 0.25)', glowSoft: 'rgba(236, 72, 153, 0.12)' },
+  { id: 'amber', label: 'Amber Warmth', color: '#F59E0B', glow: 'rgba(245, 158, 11, 0.25)', glowSoft: 'rgba(245, 158, 11, 0.12)' },
+  { id: 'sky', label: 'Midnight Sky', color: '#38BDF8', glow: 'rgba(56, 189, 248, 0.25)', glowSoft: 'rgba(56, 189, 248, 0.12)' },
+];
+
+const applyThemeAccent = (colorHex) => {
+  if (!colorHex) return;
+  const match = THEME_ACCENTS.find(t => t.color === colorHex || t.id === colorHex);
+  const color = match ? match.color : colorHex;
+  const glow = match ? match.glow : 'rgba(124, 58, 237, 0.25)';
+  const glowSoft = match ? match.glowSoft : 'rgba(124, 58, 237, 0.12)';
+  document.documentElement.style.setProperty('--violet-500', color);
+  document.documentElement.style.setProperty('--violet-glow', glowSoft);
+  document.documentElement.style.setProperty('--violet-glow-s', glow);
+};
+
+// Custom Avatar Picker supporting custom photo upload, web links, emojis, and custom text
+function CustomAvatarPicker({ avatar, onChange }) {
+  const [tab, setTab] = useState('presets'); // 'presets', 'upload', 'url', 'custom'
+  const [urlInput, setUrlInput] = useState('');
+  const [customText, setCustomText] = useState('');
+  const fileInputRef = useRef(null);
+
+  const presetEmojis = [
+    '✨', '🌸', '☕', '🌿', '🌙', '🕯️', '🎧', '🪐',
+    '🦊', '🍵', '🎨', '💫', '🐱', '🌌', '🪴', '📖',
+    '🧘', '🌺', '🏔️', '🌊', '🍄', '🥐', '🪄', '🔮'
+  ];
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Image file is too large! Please choose an image smaller than 2MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      onChange(event.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleApplyUrl = () => {
+    if (urlInput.trim()) {
+      onChange(urlInput.trim());
+    }
+  };
+
+  const handleApplyCustomText = () => {
+    if (customText.trim()) {
+      onChange(customText.trim());
+    }
+  };
+
+  return (
+    <div>
+      {/* Live Preview Box */}
+      <div className="avatar-preview-container">
+        <div className="avatar-preview-img-wrapper">
+          <UserAvatar avatar={avatar} size={64} />
+        </div>
+        <div style={{flex:1}}>
+          <div style={{fontWeight:600, fontSize:'0.95rem', marginBottom:2}}>Active Avatar</div>
+          <div style={{fontSize:'0.78rem', color:'var(--text-secondary)', marginBottom:8}}>
+            Upload your photo, paste a link, or pick cozy emojis.
+          </div>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            style={{padding:'2px 8px', fontSize:'0.75rem', color:'var(--danger)'}}
+            onClick={() => onChange('✨')}
+          >
+            Reset to Default
+          </button>
+        </div>
+      </div>
+
+      {/* Sub-tabs */}
+      <div className="avatar-custom-input-tabs">
+        <button
+          type="button"
+          className={`avatar-custom-input-tab ${tab === 'presets' ? 'active' : ''}`}
+          onClick={() => setTab('presets')}
+        >
+          ✨ Presets
+        </button>
+        <button
+          type="button"
+          className={`avatar-custom-input-tab ${tab === 'upload' ? 'active' : ''}`}
+          onClick={() => setTab('upload')}
+        >
+          📁 Upload Photo
+        </button>
+        <button
+          type="button"
+          className={`avatar-custom-input-tab ${tab === 'url' ? 'active' : ''}`}
+          onClick={() => setTab('url')}
+        >
+          🌐 Web Link
+        </button>
+        <button
+          type="button"
+          className={`avatar-custom-input-tab ${tab === 'custom' ? 'active' : ''}`}
+          onClick={() => setTab('custom')}
+        >
+          ⌨️ Text / Emoji
+        </button>
+      </div>
+
+      {/* Tab 1: Preset Emojis */}
+      {tab === 'presets' && (
+        <div className="avatar-selector-grid">
+          {presetEmojis.map(icon => (
+            <button
+              key={icon}
+              type="button"
+              className={`avatar-option-btn ${avatar === icon ? 'selected' : ''}`}
+              onClick={() => onChange(icon)}
+            >
+              {icon}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Tab 2: Upload Photo */}
+      {tab === 'upload' && (
+        <div style={{padding:'16px', background:'var(--bg-tertiary)', borderRadius:'var(--radius-md)', border:'1px dashed var(--border)', textAlign:'center'}}>
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{display:'none'}}
+            accept="image/*"
+            onChange={handleFileUpload}
+          />
+          <div style={{fontSize:'2rem', marginBottom:6}}>📸</div>
+          <div style={{fontSize:'0.88rem', fontWeight:600, marginBottom:4}}>Choose a photo from your device</div>
+          <div style={{fontSize:'0.75rem', color:'var(--text-muted)', marginBottom:12}}>Supports JPG, PNG, GIF, WebP (Max 2MB)</div>
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            Browse Image File...
+          </button>
+        </div>
+      )}
+
+      {/* Tab 3: Image URL */}
+      {tab === 'url' && (
+        <div style={{display:'flex', gap:8}}>
+          <input
+            className="input"
+            type="url"
+            placeholder="https://example.com/photo.jpg"
+            value={urlInput}
+            onChange={e => setUrlInput(e.target.value)}
+          />
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={handleApplyUrl}
+          >
+            Apply
+          </button>
+        </div>
+      )}
+
+      {/* Tab 4: Custom Text / Emoji */}
+      {tab === 'custom' && (
+        <div style={{display:'flex', gap:8}}>
+          <input
+            className="input"
+            maxLength={6}
+            placeholder="Type any emoji or initials (e.g. 💜 or AH)"
+            value={customText}
+            onChange={e => setCustomText(e.target.value)}
+          />
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={handleApplyCustomText}
+          >
+            Apply
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Modal for customizing profile and account preferences
+function ProfileModal({ open, onClose, user, onUpdateUser, onLogActivity }) {
+  const [name, setName] = useState(user?.name || '');
+  const [username, setUsername] = useState(user?.username || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [bio, setBio] = useState(user?.bio || '');
+  const [affirmation, setAffirmation] = useState(user?.affirmation || '');
+  const [avatar, setAvatar] = useState(user?.avatar || '✨');
+  const [themeAccent, setThemeAccent] = useState(user?.themeAccent || '#7C3AED');
+
+  // Password fields (optional)
+  const [showPasswordSection, setShowPasswordSection] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  // Alerts
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
+
+  useEffect(() => {
+    if (user && open) {
+      setName(user.name || '');
+      setUsername(user.username || '');
+      setEmail(user.email || '');
+      setBio(user.bio || '');
+      setAffirmation(user.affirmation || '');
+      setAvatar(user.avatar || '✨');
+      setThemeAccent(user.themeAccent || '#7C3AED');
+      setShowPasswordSection(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setErrorMsg('');
+      setSuccessMsg('');
+    }
+  }, [user, open]);
+
+  const handleSave = (e) => {
+    if (e) e.preventDefault();
+    setErrorMsg('');
+    setSuccessMsg('');
+
+    if (!name.trim() || !username.trim() || !email.trim()) {
+      setErrorMsg('Name, Username, and Email are required.');
+      return;
+    }
+
+    // Password change check
+    let updatedPassword = user.password;
+    if (showPasswordSection && (currentPassword || newPassword)) {
+      if (currentPassword !== user.password) {
+        setErrorMsg('Current password is incorrect.');
+        return;
+      }
+      if (newPassword.length < 4) {
+        setErrorMsg('New password must be at least 4 characters.');
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        setErrorMsg('New passwords do not match.');
+        return;
+      }
+      updatedPassword = newPassword;
+    }
+
+    const updatedUser = {
+      ...user,
+      name: name.trim(),
+      username: username.trim().toLowerCase(),
+      email: email.trim().toLowerCase(),
+      bio: bio.trim(),
+      affirmation: affirmation.trim(),
+      avatar,
+      themeAccent,
+      password: updatedPassword
+    };
+
+    onUpdateUser(updatedUser);
+    applyThemeAccent(themeAccent);
+
+    if (onLogActivity) {
+      onLogActivity('profile', `Updated profile settings & avatar`, '👤', `Bio: "${bio.slice(0, 30) || 'None'}"`);
+    }
+
+    setSuccessMsg('Profile saved successfully!');
+    setTimeout(() => {
+      onClose();
+    }, 450);
+  };
+
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="Customize Profile & Sanctuary"
+      wide
+      footer={
+        <>
+          <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
+          <button className="btn btn-primary" onClick={handleSave}>Save Changes</button>
+        </>
+      }
+    >
+      {errorMsg && (
+        <div className="auth-alert-box auth-alert-error" style={{marginBottom:16}}>
+          <span>⚠️</span>
+          <span>{errorMsg}</span>
+        </div>
+      )}
+
+      {successMsg && (
+        <div className="auth-alert-box auth-alert-success" style={{marginBottom:16}}>
+          <span>✨</span>
+          <span>{successMsg}</span>
+        </div>
+      )}
+
+      {/* 1. Custom Avatar Selection */}
+      <div className="form-group">
+        <label className="form-label">Profile Avatar</label>
+        <CustomAvatarPicker avatar={avatar} onChange={setAvatar} />
+      </div>
+
+      {/* 2. Theme Accent Preference */}
+      <div className="form-group" style={{marginTop:18}}>
+        <label className="form-label">Cozy Theme Accent</label>
+        <div className="theme-swatches-grid">
+          {THEME_ACCENTS.map(t => (
+            <button
+              key={t.id}
+              type="button"
+              className={`theme-swatch-btn ${themeAccent === t.color ? 'selected' : ''}`}
+              style={{background: t.color, color: t.color}}
+              onClick={() => {
+                setThemeAccent(t.color);
+                applyThemeAccent(t.color);
+              }}
+              title={t.label}
+            />
+          ))}
+        </div>
+        <div style={{fontSize:'0.75rem', color:'var(--text-muted)', marginTop:6}}>
+          Changes the violet ambiance to your favorite cozy hue.
+        </div>
+      </div>
+
+      <div className="form-row" style={{marginTop:14}}>
+        <div className="form-group">
+          <label className="form-label">Display Name</label>
+          <input className="input" value={name} onChange={e => setName(e.target.value)} />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Username</label>
+          <input className="input" value={username} onChange={e => setUsername(e.target.value)} />
+        </div>
+      </div>
+
+      <div className="form-group">
+        <label className="form-label">Email Address</label>
+        <input className="input" type="email" value={email} onChange={e => setEmail(e.target.value)} />
+      </div>
+
+      <div className="form-group">
+        <label className="form-label">Cozy Tagline / Bio</label>
+        <input className="input" placeholder="e.g. Architect of calm days & mindful thoughts" value={bio} onChange={e => setBio(e.target.value)} />
+      </div>
+
+      <div className="form-group">
+        <label className="form-label">Personal Affirmation / Daily Goal</label>
+        <input className="input" placeholder="e.g. Focus on progress, not perfection." value={affirmation} onChange={e => setAffirmation(e.target.value)} />
+      </div>
+
+      {/* Security: Change password toggle */}
+      <div style={{marginTop:20, paddingTop:14, borderTop:'1px dashed var(--border)'}}>
+        <button
+          type="button"
+          className="btn btn-ghost btn-sm"
+          style={{padding:0, color:'var(--violet-400)', fontSize:'0.85rem'}}
+          onClick={() => setShowPasswordSection(!showPasswordSection)}
+        >
+          {showPasswordSection ? '▲ Hide Password Change' : '▼ Change Account Password'}
+        </button>
+
+        {showPasswordSection && (
+          <div style={{marginTop:12}} className="slide-in">
+            <div className="form-group">
+              <label className="form-label">Current Password</label>
+              <input className="input" type="password" placeholder="••••••••" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} />
+            </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">New Password</label>
+                <input className="input" type="password" placeholder="••••••••" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Confirm New Password</label>
+                <input className="input" type="password" placeholder="••••••••" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </Modal>
+  );
+}
+
+
+// ===== DASHBOARD PAGE =====
+function DashboardPage({ tasks, habits, blocks, routines, journal, reminders = [], activity = [], setPage, user, onToggleReminder, onOpenProfile }) {
+  const todayTasks = tasks.filter(t => t.dueDate === td && !t.completed);
+  const completedToday = tasks.filter(t => t.dueDate === td && t.completed).length;
+  const totalToday = tasks.filter(t => t.dueDate === td).length;
+  const taskPct = totalToday > 0 ? Math.round((completedToday / totalToday) * 100) : 0;
+
+  const todayBlocks = blocks.filter(b => b.date === td).sort((a,b) => a.startSlot - b.startSlot);
+
+  const todayHabits = habits.filter(h => h.frequency === 'daily');
+  const habitsChecked = todayHabits.filter(h => h.checkins[td]).length;
+  const habitPct = todayHabits.length > 0 ? Math.round((habitsChecked / todayHabits.length) * 100) : 0;
+
+  const pendingReminders = reminders.filter(r => r.status === 'pending');
+  const todayReminders = pendingReminders.filter(r => r.datetime?.startsWith(td));
+
+  const activeRoutine = routines.find(r => r.activeStep >= 0);
+
+  const todayEntry = journal.find(j => j.date === td);
+  const prompt = useMemo(() => getRandomPrompt(), []);
+
+  const now = new Date();
+  const greeting = now.getHours() < 12 ? 'Good morning' : now.getHours() < 17 ? 'Good afternoon' : 'Good evening';
+
+  return (
+    <div className="fade-in">
+      <div className="page-header" style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', flexWrap:'wrap', gap:16}}>
+        <div style={{display:'flex', alignItems:'center', gap:14}}>
+          <div onClick={onOpenProfile} style={{cursor:'pointer'}} title="Click to customize avatar & profile">
+            <UserAvatar avatar={user?.avatar || '✨'} size={48} />
+          </div>
+          <div>
+            <h2>✨ {greeting}{user?.name ? `, ${user.name}` : ''}!</h2>
+            <p>{fmtDateFull(td)}{user?.bio ? ` • "${user.bio}"` : ` — Let's make today count.`}</p>
+          </div>
+        </div>
+        {onOpenProfile && (
+          <button className="btn btn-secondary btn-sm" onClick={onOpenProfile} style={{gap:6}}>
+            <span>⚙️</span> Edit Profile
+          </button>
+        )}
+      </div>
+
+      {user?.affirmation && (
+        <div style={{marginBottom:22, padding:'10px 16px', background:'var(--violet-glow)', borderRadius:'var(--radius-md)', border:'1px solid rgba(124,58,237,0.2)', display:'flex', alignItems:'center', gap:10}}>
+          <span style={{fontSize:'1.1rem'}}>🌸</span>
+          <span style={{fontSize:'0.86rem', fontStyle:'italic', color:'var(--violet-200)'}}>"{user.affirmation}"</span>
+        </div>
+      )}
+
+      {/* Quick stats row */}
+      <div style={{display:'flex',gap:16,marginBottom:24,flexWrap:'wrap'}}>
+        {[
+          { label: 'Tasks Done', value: `${completedToday}/${totalToday}`, pct: taskPct },
+          { label: 'Habits', value: `${habitsChecked}/${todayHabits.length}`, pct: habitPct },
+          { label: 'Time Blocks', value: todayBlocks.length, pct: null },
+          { label: 'Reminders', value: todayReminders.length, pct: null },
+        ].map((s,i) => (
+          <div key={i} className="card card-glow" style={{flex:'1 1 140px',display:'flex',alignItems:'center',gap:16,padding:'18px 20px'}}>
+            {s.pct !== null ? <ProgressRing pct={s.pct} size={48} stroke={4} /> : null}
+            <div>
+              <div className="stat-value" style={{fontSize:'1.5rem'}}>{s.value}</div>
+              <div className="stat-label">{s.label}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="dashboard-grid">
+        {/* Today's Tasks */}
+        <div className="card dashboard-card">
+          <div className="card-header">
+            <h3><span className="card-icon">📋</span> Today's Tasks</h3>
+            <button className="btn btn-ghost btn-sm" onClick={() => setPage('tasks')}>View all →</button>
+          </div>
+          {todayTasks.length === 0 ? (
+            <div style={{textAlign:'center',padding:'16px 0',color:'var(--text-muted)',fontSize:'0.9rem'}}>
+              🎉 All done for today!
+            </div>
+          ) : (
+            todayTasks.slice(0, 4).map(t => (
+              <div key={t.id} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 0',borderBottom:'1px solid var(--border)'}}>
+                <span style={{fontSize:'0.8rem'}}>{PRIORITIES[t.priority]?.icon}</span>
+                <span style={{flex:1,fontSize:'0.9rem'}}>{t.title}</span>
+                <span className={`chip chip-${CATEGORIES[t.category]?.color || 'violet'}`}>{CATEGORIES[t.category]?.label || t.category}</span>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Upcoming Time Blocks */}
+        <div className="card dashboard-card">
+          <div className="card-header">
+            <h3><span className="card-icon">🕐</span> Time Blocks</h3>
+            <button className="btn btn-ghost btn-sm" onClick={() => setPage('planner')}>Open planner →</button>
+          </div>
+          {todayBlocks.length === 0 ? (
+            <div style={{textAlign:'center',padding:'16px 0',color:'var(--text-muted)',fontSize:'0.9rem'}}>
+              No blocks scheduled today
+            </div>
+          ) : (
+            todayBlocks.slice(0, 4).map(b => {
+              const startH = Math.floor(b.startSlot);
+              const startM = (b.startSlot % 1) * 60;
+              const endH = Math.floor(b.endSlot);
+              const endM = (b.endSlot % 1) * 60;
+              const fmt = (h,m) => `${h%12||12}:${String(m).padStart(2,'0')} ${h<12?'AM':'PM'}`;
+              return (
+                <div key={b.id} className={`time-block time-block-${b.color}`} style={{marginBottom:6}}>
+                  <span>{b.title}</span>
+                  <span style={{marginLeft:'auto',opacity:0.7,fontSize:'0.78rem'}}>{fmt(startH,startM)} – {fmt(endH,endM)}</span>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* Habit Progress */}
+        <div className="card dashboard-card">
+          <div className="card-header">
+            <h3><span className="card-icon">🔥</span> Habits Today</h3>
+            <button className="btn btn-ghost btn-sm" onClick={() => setPage('habits')}>See all →</button>
+          </div>
+          {todayHabits.length === 0 ? (
+            <div style={{textAlign:'center',padding:'16px 0',color:'var(--text-muted)',fontSize:'0.9rem'}}>
+              No habits tracked yet today
+            </div>
+          ) : (
+            todayHabits.map(h => (
+              <div key={h.id} style={{display:'flex',alignItems:'center',gap:10,padding:'6px 0'}}>
+                <span>{h.icon}</span>
+                <span style={{flex:1,fontSize:'0.9rem'}}>{h.name}</span>
+                {h.checkins[td] ? <span className="chip chip-success">✓ Done</span> : <span className="chip chip-violet">Pending</span>}
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Active Reminders */}
+        <div className="card dashboard-card">
+          <div className="card-header">
+            <h3><span className="card-icon">🔔</span> Active Reminders</h3>
+            <button className="btn btn-ghost btn-sm" onClick={() => setPage('reminders')}>View all →</button>
+          </div>
+          {todayReminders.length === 0 ? (
+            <div style={{textAlign:'center',padding:'16px 0',color:'var(--text-muted)',fontSize:'0.9rem'}}>
+              No pending reminders for today
+            </div>
+          ) : (
+            todayReminders.slice(0, 3).map(r => (
+              <div key={r.id} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 0',borderBottom:'1px solid var(--border)'}}>
+                <span style={{fontSize:'1.1rem'}}>{r.type === 'wellness' ? '🌿' : r.type === 'task' ? '📋' : r.type === 'habit' ? '🔥' : '🔔'}</span>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:'0.88rem',fontWeight:500,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{r.title}</div>
+                  <div style={{fontSize:'0.75rem',color:'var(--text-muted)'}}>Due {r.datetime?.replace('T', ' ')}</div>
+                </div>
+                {onToggleReminder && (
+                  <button className="btn btn-secondary btn-sm" style={{padding:'4px 8px',fontSize:'0.75rem'}} onClick={() => onToggleReminder(r.id)}>
+                    ✓ Done
+                  </button>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Recent Past Activity */}
+        <div className="card dashboard-card">
+          <div className="card-header">
+            <h3><span className="card-icon">📜</span> Recent Activity</h3>
+            <button className="btn btn-ghost btn-sm" onClick={() => setPage('activity')}>History →</button>
+          </div>
+          {activity.length === 0 ? (
+            <div style={{textAlign:'center',padding:'16px 0',color:'var(--text-muted)',fontSize:'0.9rem'}}>
+              No activity records logged yet
+            </div>
+          ) : (
+            activity.slice(0, 3).map(a => (
+              <div key={a.id} style={{display:'flex',alignItems:'flex-start',gap:10,padding:'8px 0',borderBottom:'1px solid var(--border)'}}>
+                <span style={{fontSize:'1.1rem',lineHeight:1.2}}>{a.icon || '✨'}</span>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:'0.85rem',fontWeight:500,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{a.title}</div>
+                  <div style={{fontSize:'0.72rem',color:'var(--text-muted)'}}>{a.time ? `${a.time} · ` : ''}{fmtDate(a.date)}</div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Active Routine / Journal Prompt */}
+        <div className="card dashboard-card">
+          <div className="card-header">
+            <h3><span className="card-icon">📝</span> Journal</h3>
+            <button className="btn btn-ghost btn-sm" onClick={() => setPage('journal')}>Write →</button>
+          </div>
+          {todayEntry ? (
+            <div>
+              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
+                <span style={{fontSize:'1.5rem'}}>{MOODS.find(m=>m.value===todayEntry.mood)?.emoji || '😊'}</span>
+                <span style={{color:'var(--text-secondary)',fontSize:'0.9rem'}}>Feeling {todayEntry.mood}</span>
+              </div>
+              <p style={{fontSize:'0.88rem',color:'var(--text-secondary)',lineHeight:1.6}}>
+                {todayEntry.content.slice(0, 120)}{todayEntry.content.length > 120 ? '...' : ''}
+              </p>
+            </div>
+          ) : (
+            <div style={{textAlign:'center',padding:'8px 0'}}>
+              <p style={{color:'var(--violet-300)',fontStyle:'italic',marginBottom:12,fontSize:'0.95rem'}}>"{prompt}"</p>
+              <button className="btn btn-primary btn-sm" onClick={() => setPage('journal')}>Start writing →</button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ===== TASKS PAGE =====
+function TasksPage({ tasks, setTasks, onLogActivity }) {
+  const [view, setView] = useState('today');
+  const [showForm, setShowForm] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filtered = useMemo(() => {
+    let list = tasks;
+    if (searchTerm) list = list.filter(t => t.title.toLowerCase().includes(searchTerm.toLowerCase()));
+    switch (view) {
+      case 'today': return list.filter(t => t.dueDate === td && !t.completed);
+      case 'upcoming': return list.filter(t => isFuture(t.dueDate) && !t.completed).sort((a,b) => a.dueDate.localeCompare(b.dueDate));
+      case 'completed': return list.filter(t => t.completed);
+      default: return list.filter(t => !t.completed);
+    }
+  }, [tasks, view, searchTerm]);
+
+  const toggleTask = (id) => setTasks(prev => prev.map(t => {
+    if (t.id === id) {
+      const willBeDone = !t.completed;
+      if (willBeDone && onLogActivity) {
+        onLogActivity('task', `Completed task: "${t.title}"`, '✅', t.category ? `Category: ${CATEGORIES[t.category]?.label || t.category}` : '');
+      }
+      return {...t, completed: willBeDone};
+    }
+    return t;
+  }));
+  const deleteTask = (id) => {
+    const t = tasks.find(x => x.id === id);
+    setTasks(prev => prev.filter(x => x.id !== id));
+    if (onLogActivity && t) {
+      onLogActivity('task', `Deleted task: "${t.title}"`, '🗑️', t.category ? `Category: ${CATEGORIES[t.category]?.label || t.category}` : '');
+    }
+  };
+  const toggleSubtask = (taskId, subId) => setTasks(prev => prev.map(t =>
+    t.id === taskId ? {...t, subtasks: t.subtasks.map(s => s.id === subId ? {...s, completed: !s.completed} : s)} : t
+  ));
+
+  const saveTask = (task) => {
+    if (editingTask) {
+      setTasks(prev => prev.map(t => t.id === editingTask.id ? {...editingTask, ...task} : t));
+      if (onLogActivity) {
+        onLogActivity('task', `Updated task: "${task.title}"`, '📋', task.dueDate ? `Due: ${task.dueDate}` : '');
+      }
+    } else {
+      setTasks(prev => [...prev, { ...task, id: uid(), subtasks: task.subtasks || [], completed: false, createdAt: td }]);
+      if (onLogActivity) {
+        onLogActivity('task', `Created task: "${task.title}"`, '📋', task.dueDate ? `Due: ${task.dueDate}` : 'No due date');
+      }
+    }
+    setEditingTask(null);
+    setShowForm(false);
+  };
+
+  const addSubtask = (taskId, title) => {
+    setTasks(prev => prev.map(t =>
+      t.id === taskId ? {...t, subtasks: [...t.subtasks, { id: uid(), title, completed: false }]} : t
+    ));
+  };
+
+  return (
+    <div className="fade-in">
+      <div className="page-header">
+        <h2>📋 Tasks</h2>
+        <p>Stay on top of everything that matters.</p>
+        <div className="page-header-actions">
+          <button className="btn btn-primary" onClick={() => { setEditingTask(null); setShowForm(true); }}>+ New Task</button>
+          <div className="search-bar" style={{flex:1,maxWidth:300}}>
+            <span className="search-icon">🔍</span>
+            <input className="input" placeholder="Search tasks..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+          </div>
+        </div>
+      </div>
+
+      <div className="tabs">
+        {[
+          { key: 'today', label: `Today (${tasks.filter(t=>t.dueDate===td&&!t.completed).length})` },
+          { key: 'upcoming', label: 'Upcoming' },
+          { key: 'all', label: 'All Active' },
+          { key: 'completed', label: 'Completed' },
+        ].map(tab => (
+          <div key={tab.key} className={`tab ${view===tab.key?'active':''}`} onClick={() => setView(tab.key)}>{tab.label}</div>
+        ))}
+      </div>
+
+      {filtered.length === 0 ? (
+        <EmptyState
+          icon={view === 'completed' ? '🏆' : '🎯'}
+          title={view === 'completed' ? 'No completed tasks yet' : 'All clear!'}
+          desc={view === 'completed' ? 'Complete some tasks to see them here.' : "You've got nothing here. Add a task to get started!"}
+          action={view !== 'completed' && <button className="btn btn-primary" onClick={() => setShowForm(true)}>+ Add Task</button>}
+        />
+      ) : (
+        <div>
+          {filtered.map(task => (
+            <div key={task.id} className={`task-item ${task.completed ? 'completed' : ''} slide-in`}>
+              <Checkbox checked={task.completed} onChange={() => toggleTask(task.id)} priority={task.priority} />
+              <div className="task-content">
+                <div className="task-title">{task.title}</div>
+                <div className="task-meta">
+                  {task.dueDate && <span>📅 {fmtDate(task.dueDate)}</span>}
+                  {task.category && <span className={`chip chip-${CATEGORIES[task.category]?.color||'violet'}`}>{CATEGORIES[task.category]?.label||task.category}</span>}
+                  {task.priority && task.priority !== 'none' && <span className={`chip chip-${PRIORITIES[task.priority]?.color}`}>{PRIORITIES[task.priority]?.label}</span>}
+                  {task.subtasks.length > 0 && <span>📝 {task.subtasks.filter(s=>s.completed).length}/{task.subtasks.length}</span>}
+                </div>
+                {/* Subtasks */}
+                {task.subtasks.length > 0 && (
+                  <div className="subtask-list">
+                    {task.subtasks.map(sub => (
+                      <div key={sub.id} className={`subtask-item ${sub.completed?'completed':''}`}>
+                        <Checkbox checked={sub.completed} onChange={() => toggleSubtask(task.id, sub.id)} size={18} />
+                        <span>{sub.title}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="task-actions">
+                <button className="btn btn-ghost btn-sm" onClick={() => { setEditingTask(task); setShowForm(true); }}>✏️</button>
+                <button className="btn btn-ghost btn-sm" onClick={() => deleteTask(task.id)}>🗑️</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Task Form Modal */}
+      <TaskFormModal
+        open={showForm}
+        onClose={() => { setShowForm(false); setEditingTask(null); }}
+        onSave={saveTask}
+        task={editingTask}
+      />
+    </div>
+  );
+}
+
+function TaskFormModal({ open, onClose, onSave, task }) {
+  const [title, setTitle] = useState('');
+  const [priority, setPriority] = useState('none');
+  const [dueDate, setDueDate] = useState(td);
+  const [category, setCategory] = useState('personal');
+  const [subtaskText, setSubtaskText] = useState('');
+  const [subtasks, setSubtasks] = useState([]);
+
+  useEffect(() => {
+    if (task) {
+      setTitle(task.title); setPriority(task.priority); setDueDate(task.dueDate); setCategory(task.category);
+      setSubtasks(task.subtasks || []);
+    } else {
+      setTitle(''); setPriority('none'); setDueDate(td); setCategory('personal'); setSubtasks([]);
+    }
+  }, [task, open]);
+
+  const addSub = () => {
+    if (!subtaskText.trim()) return;
+    setSubtasks(prev => [...prev, { id: uid(), title: subtaskText.trim(), completed: false }]);
+    setSubtaskText('');
+  };
+  const removeSub = (id) => setSubtasks(prev => prev.filter(s => s.id !== id));
+
+  const handleSave = () => {
+    if (!title.trim()) return;
+    onSave({ title: title.trim(), priority, dueDate, category, subtasks });
+  };
+
+  return (
+    <Modal open={open} onClose={onClose} title={task ? 'Edit Task' : 'New Task'}
+      footer={<><button className="btn btn-secondary" onClick={onClose}>Cancel</button><button className="btn btn-primary" onClick={handleSave}>Save Task</button></>}>
+      <div className="form-group">
+        <label className="form-label">Title</label>
+        <input className="input" placeholder="What needs to be done?" value={title} onChange={e=>setTitle(e.target.value)} autoFocus />
+      </div>
+      <div className="form-row">
+        <div className="form-group">
+          <label className="form-label">Priority</label>
+          <select className="select" value={priority} onChange={e=>setPriority(e.target.value)}>
+            <option value="none">None</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+        <div className="form-group">
+          <label className="form-label">Category</label>
+          <select className="select" value={category} onChange={e=>setCategory(e.target.value)}>
+            {Object.entries(CATEGORIES).map(([k,v]) => <option key={k} value={k}>{v.icon} {v.label}</option>)}
+          </select>
+        </div>
+      </div>
+      <div className="form-group">
+        <label className="form-label">Due Date</label>
+        <input className="input" type="date" value={dueDate} onChange={e=>setDueDate(e.target.value)} />
+      </div>
+      <div className="form-group">
+        <label className="form-label">Subtasks</label>
+        {subtasks.map(s => (
+          <div key={s.id} style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
+            <span style={{flex:1,fontSize:'0.9rem',color:'var(--text-secondary)'}}>{s.title}</span>
+            <button className="btn btn-ghost btn-sm" onClick={()=>removeSub(s.id)}>✕</button>
+          </div>
+        ))}
+        <div style={{display:'flex',gap:8}}>
+          <input className="input" placeholder="Add a subtask..." value={subtaskText} onChange={e=>setSubtaskText(e.target.value)} onKeyDown={e=>e.key==='Enter'&&addSub()} />
+          <button className="btn btn-secondary btn-sm" onClick={addSub}>+</button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+
+// ===== PLANNER (TIME BLOCKING) PAGE =====
+function PlannerPage({ blocks, setBlocks, tasks, onLogActivity }) {
+  const [planDate, setPlanDate] = useState(td);
+  const [showForm, setShowForm] = useState(false);
+  const [editBlock, setEditBlock] = useState(null);
+  const [dragSlot, setDragSlot] = useState(null);
+  const timelineRef = useRef(null);
+  const [now, setNow] = useState(new Date());
+
+  // Update current time every minute
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const dayBlocks = blocks.filter(b => b.date === planDate);
+
+  // Generate time slots (6 AM to 11 PM in 30-min increments)
+  const slots = [];
+  for (let h = 6; h <= 22; h++) {
+    slots.push(h);
+    slots.push(h + 0.5);
+  }
+
+  const getBlocksAt = (slot) => dayBlocks.filter(b => slot >= b.startSlot && slot < b.endSlot);
+
+  const fmtSlot = (s) => {
+    const h = Math.floor(s);
+    const m = (s % 1) * 60;
+    const ampm = h < 12 ? 'AM' : 'PM';
+    return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${ampm}`;
+  };
+
+  // Current time position
+  const currentHour = now.getHours() + now.getMinutes() / 60;
+  const showTimeLine = isToday(planDate) && currentHour >= 6 && currentHour <= 23;
+  const timeLineTop = ((currentHour - 6) / 17) * 100;
+
+  const handleDrop = (slot) => {
+    if (dragSlot !== null && dragSlot.blockId) {
+      setBlocks(prev => prev.map(b => {
+        if (b.id === dragSlot.blockId) {
+          const duration = b.endSlot - b.startSlot;
+          return { ...b, startSlot: slot, endSlot: slot + duration };
+        }
+        return b;
+      }));
+    }
+    setDragSlot(null);
+  };
+
+  const saveBlock = (block) => {
+    if (editBlock) {
+      setBlocks(prev => prev.map(b => b.id === editBlock.id ? { ...editBlock, ...block } : b));
+      if (onLogActivity) {
+        onLogActivity('planner', `Updated time block: "${block.title}"`, '🕐', `${fmtSlot(block.startSlot)} – ${fmtSlot(block.endSlot)}`, planDate);
+      }
+    } else {
+      setBlocks(prev => [...prev, { ...block, id: uid(), date: planDate }]);
+      if (onLogActivity) {
+        onLogActivity('planner', `Scheduled time block: "${block.title}"`, '🕐', `${fmtSlot(block.startSlot)} – ${fmtSlot(block.endSlot)}`, planDate);
+      }
+    }
+    setEditBlock(null);
+    setShowForm(false);
+  };
+
+  const deleteBlock = (id) => {
+    const toDelete = blocks.find(b => b.id === id);
+    setBlocks(prev => prev.filter(b => b.id !== id));
+    if (onLogActivity && toDelete) {
+      onLogActivity('planner', `Removed time block: "${toDelete.title}"`, '🗑️', `${fmtSlot(toDelete.startSlot)} – ${fmtSlot(toDelete.endSlot)}`, planDate);
+    }
+  };
+
+  return (
+    <div className="fade-in">
+      <div className="page-header">
+        <h2>🕐 Planner</h2>
+        <p>Design your day with intention.</p>
+        <div className="page-header-actions">
+          <button className="btn btn-primary" onClick={() => { setEditBlock(null); setShowForm(true); }}>+ Add Block</button>
+          <div style={{display:'flex',alignItems:'center',gap:8}}>
+            <button className="btn btn-secondary btn-sm" onClick={() => setPlanDate(addDays(planDate, -1))}>←</button>
+            <span style={{fontWeight:600,minWidth:120,textAlign:'center'}}>
+              {isToday(planDate) ? '📍 Today' : fmtDate(planDate)}
+            </span>
+            <button className="btn btn-secondary btn-sm" onClick={() => setPlanDate(addDays(planDate, 1))}>→</button>
+            {!isToday(planDate) && (
+              <button className="btn btn-ghost btn-sm" onClick={() => setPlanDate(td)}>Today</button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="card" style={{padding:0,overflow:'hidden',position:'relative'}} ref={timelineRef}>
+        {/* Current time indicator */}
+        {showTimeLine && (
+          <>
+            <div className="current-time-dot" style={{top: `${timeLineTop}%`}} />
+            <div className="current-time-line" style={{top: `${timeLineTop}%`}} />
+          </>
+        )}
+
+        <div className="timeline">
+          {slots.map((slot, i) => {
+            const isHour = slot % 1 === 0;
+            const blocksHere = getBlocksAt(slot);
+            const isFirstSlotOfBlock = dayBlocks.filter(b => b.startSlot === slot);
+            return (
+              <div
+                key={slot}
+                className="time-slot"
+                onDragOver={e => { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }}
+                onDragLeave={e => e.currentTarget.classList.remove('drag-over')}
+                onDrop={e => { e.currentTarget.classList.remove('drag-over'); handleDrop(slot); }}
+                onClick={() => {
+                  if (blocksHere.length === 0) {
+                    setEditBlock(null);
+                    setShowForm(true);
+                  }
+                }}
+              >
+                <div className="time-label" style={{opacity: isHour ? 1 : 0.4, fontSize: isHour ? '0.78rem' : '0.7rem'}}>
+                  {fmtSlot(slot)}
+                </div>
+                <div className="time-slot-content">
+                  {isFirstSlotOfBlock.map(block => {
+                    const spanSlots = block.endSlot - block.startSlot;
+                    return (
+                      <div
+                        key={block.id}
+                        className={`time-block time-block-${block.color}`}
+                        style={{minHeight: `${spanSlots * 56 - 8}px`}}
+                        draggable
+                        onDragStart={() => setDragSlot({ blockId: block.id })}
+                        onClick={e => { e.stopPropagation(); setEditBlock(block); setShowForm(true); }}
+                      >
+                        <div style={{fontWeight:600}}>{block.title}</div>
+                        <div style={{fontSize:'0.75rem',opacity:0.7,marginTop:2}}>{fmtSlot(block.startSlot)} – {fmtSlot(block.endSlot)}</div>
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          style={{position:'absolute',top:4,right:4,padding:2,fontSize:'0.7rem'}}
+                          onClick={e => { e.stopPropagation(); deleteBlock(block.id); }}
+                        >✕</button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Block Form Modal */}
+      <BlockFormModal open={showForm} onClose={() => { setShowForm(false); setEditBlock(null); }} onSave={saveBlock} block={editBlock} />
+    </div>
+  );
+}
+
+function BlockFormModal({ open, onClose, onSave, block }) {
+  const [title, setTitle] = useState('');
+  const [startSlot, setStartSlot] = useState(9);
+  const [endSlot, setEndSlot] = useState(10);
+  const [color, setColor] = useState('violet');
+  const [category, setCategory] = useState('work');
+
+  useEffect(() => {
+    if (block) {
+      setTitle(block.title); setStartSlot(block.startSlot); setEndSlot(block.endSlot);
+      setColor(block.color); setCategory(block.category || 'work');
+    } else {
+      setTitle(''); setStartSlot(9); setEndSlot(10); setColor('violet'); setCategory('work');
+    }
+  }, [block, open]);
+
+  const fmtSlot = (s) => {
+    const h = Math.floor(s); const m = (s % 1) * 60;
+    return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`;
+  };
+
+  const timeOptions = [];
+  for (let h = 6; h <= 23; h++) { timeOptions.push(h); timeOptions.push(h + 0.5); }
+
+  return (
+    <Modal open={open} onClose={onClose} title={block ? 'Edit Block' : 'New Time Block'}
+      footer={<><button className="btn btn-secondary" onClick={onClose}>Cancel</button><button className="btn btn-primary" onClick={() => { if (title.trim()) onSave({ title, startSlot: Number(startSlot), endSlot: Number(endSlot), color, category }); }}>Save Block</button></>}>
+      <div className="form-group">
+        <label className="form-label">Title</label>
+        <input className="input" placeholder="What are you working on?" value={title} onChange={e=>setTitle(e.target.value)} autoFocus />
+      </div>
+      <div className="form-row">
+        <div className="form-group">
+          <label className="form-label">Start Time</label>
+          <select className="select" value={startSlot} onChange={e=>setStartSlot(Number(e.target.value))}>
+            {timeOptions.map(t => <option key={t} value={t}>{fmtSlot(t)}</option>)}
+          </select>
+        </div>
+        <div className="form-group">
+          <label className="form-label">End Time</label>
+          <select className="select" value={endSlot} onChange={e=>setEndSlot(Number(e.target.value))}>
+            {timeOptions.filter(t => t > startSlot).map(t => <option key={t} value={t}>{fmtSlot(t)}</option>)}
+          </select>
+        </div>
+      </div>
+      <div className="form-row">
+        <div className="form-group">
+          <label className="form-label">Category</label>
+          <select className="select" value={category} onChange={e=>setCategory(e.target.value)}>
+            {Object.entries(CATEGORIES).map(([k,v]) => <option key={k} value={k}>{v.icon} {v.label}</option>)}
+          </select>
+        </div>
+        <div className="form-group">
+          <label className="form-label">Color</label>
+          <div style={{display:'flex',gap:8,marginTop:4}}>
+            {BLOCK_COLORS.map(c => (
+              <div key={c}
+                onClick={() => setColor(c)}
+                style={{
+                  width:32, height:32, borderRadius:'var(--radius-sm)', cursor:'pointer',
+                  border: color === c ? '2px solid var(--text-primary)' : '2px solid transparent',
+                  transition: 'all var(--transition)',
+                }}
+                className={`time-block time-block-${c}`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+// ===== HABITS PAGE =====
+function HabitsPage({ habits, setHabits, onLogActivity }) {
+  const [showForm, setShowForm] = useState(false);
+  const [heatmapHabit, setHeatmapHabit] = useState(null);
+  const [view, setView] = useState('list');
+
+  const toggleCheckin = (id) => {
+    setHabits(prev => prev.map(h => {
+      if (h.id !== id) return h;
+      const newCheckins = { ...h.checkins };
+      if (newCheckins[td]) {
+        delete newCheckins[td];
+      } else {
+        newCheckins[td] = true;
+        if (onLogActivity) {
+          const streak = getStreak(h);
+          onLogActivity('habit', `Checked in habit: "${h.name}"`, h.icon || '🔥', `${streak + 1}-day streak achieved`);
+        }
+      }
+      return { ...h, checkins: newCheckins };
+    }));
+  };
+
+  const getStreak = (habit) => {
+    let streak = 0;
+    let d = td;
+    while (habit.checkins[d]) { streak++; d = addDays(d, -1); }
+    return streak;
+  };
+
+  const getCompletionRate = (habit, days = 30) => {
+    let done = 0;
+    for (let i = 0; i < days; i++) {
+      if (habit.checkins[addDays(td, -i)]) done++;
+    }
+    return Math.round((done / days) * 100);
+  };
+
+  const addHabit = (habit) => {
+    setHabits(prev => [...prev, { ...habit, id: uid(), checkins: {}, createdAt: td }]);
+    if (onLogActivity) {
+      onLogActivity('habit', `Created habit: "${habit.name}"`, habit.icon || '🔥', `${habit.frequency === 'weekly' ? 'Weekly' : 'Daily'} goal`);
+    }
+    setShowForm(false);
+  };
+
+  const deleteHabit = (id) => {
+    const h = habits.find(x => x.id === id);
+    setHabits(prev => prev.filter(x => x.id !== id));
+    if (onLogActivity && h) {
+      onLogActivity('habit', `Deleted habit: "${h.name}"`, '🗑️', '');
+    }
+  };
+
+  // Build heatmap data (last 12 weeks)
+  const buildHeatmap = (habit) => {
+    const cells = [];
+    for (let i = 83; i >= 0; i--) {
+      const d = addDays(td, -i);
+      const checked = habit.checkins[d];
+      const future = isFuture(d);
+      cells.push({ date: d, checked, future, day: new Date(d + 'T00:00:00').getDay() });
+    }
+    return cells;
+  };
+
+  return (
+    <div className="fade-in">
+      <div className="page-header">
+        <h2>🔥 Habits</h2>
+        <p>Small daily actions, big results over time.</p>
+        <div className="page-header-actions">
+          <button className="btn btn-primary" onClick={() => setShowForm(true)}>+ New Habit</button>
+        </div>
+      </div>
+
+      {habits.length === 0 ? (
+        <EmptyState icon="🌱" title="No habits yet" desc="Start building positive habits, one day at a time."
+          action={<button className="btn btn-primary" onClick={() => setShowForm(true)}>+ Add Habit</button>} />
+      ) : (
+        <div>
+          {habits.map(habit => {
+            const streak = getStreak(habit);
+            const rate = getCompletionRate(habit);
+            const isChecked = !!habit.checkins[td];
+            return (
+              <div key={habit.id} className="slide-in">
+                <div className="habit-item">
+                  <div className="habit-icon">{habit.icon}</div>
+                  <div className="habit-info">
+                    <div className="habit-name">{habit.name}</div>
+                    <div className="habit-streak">
+                      {streak > 0 && <><span>🔥</span> {streak} day streak</>}
+                      {streak === 0 && <span>Start your streak today!</span>}
+                      <span style={{margin:'0 8px'}}>·</span>
+                      <span>{rate}% (30d)</span>
+                    </div>
+                    <div className="habit-progress-bar">
+                      <div className="habit-progress-fill" style={{width: `${rate}%`}} />
+                    </div>
+                  </div>
+                  <button className="btn btn-ghost btn-sm" onClick={() => setHeatmapHabit(heatmapHabit?.id === habit.id ? null : habit)} title="Show heatmap">📊</button>
+                  <button className="btn btn-ghost btn-sm" onClick={() => deleteHabit(habit.id)} title="Delete">🗑️</button>
+                  <button className={`habit-check-btn ${isChecked ? 'checked' : ''}`} onClick={() => toggleCheckin(habit.id)}>
+                    {isChecked ? '✓' : ''}
+                  </button>
+                </div>
+
+                {/* Heatmap (expandable) */}
+                {heatmapHabit?.id === habit.id && (
+                  <div className="card fade-in" style={{marginTop:4,marginBottom:12}}>
+                    <div style={{marginBottom:8,fontSize:'0.85rem',color:'var(--text-secondary)'}}>Last 12 weeks</div>
+                    <div className="heatmap">
+                      <div style={{display:'flex',gap:2,marginBottom:4}}>
+                        {['S','M','T','W','T','F','S'].map((d,i) => (
+                          <div key={i} className="heatmap-label" style={{width:16,textAlign:'center'}}>{d}</div>
+                        ))}
+                      </div>
+                      <div className="heatmap-grid" style={{display:'grid',gridTemplateColumns:'repeat(12, 16px)',gridAutoFlow:'column',gridTemplateRows:'repeat(7, 16px)',gap:3}}>
+                        {buildHeatmap(habit).map((cell, i) => {
+                          let level = '';
+                          if (cell.future) level = 'future';
+                          else if (cell.checked) level = 'level-4';
+                          return (
+                            <div key={i} className={`heatmap-cell ${level}`}
+                              title={`${cell.date}${cell.checked ? ' ✓' : ''}`} />
+                          );
+                        })}
+                      </div>
+                      <div style={{display:'flex',gap:8,alignItems:'center',marginTop:8,fontSize:'0.75rem',color:'var(--text-muted)'}}>
+                        <span>Less</span>
+                        <div className="heatmap-cell" style={{width:12,height:12}} />
+                        <div className="heatmap-cell level-4" style={{width:12,height:12}} />
+                        <span>More</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* New Habit Modal */}
+      <HabitFormModal open={showForm} onClose={() => setShowForm(false)} onSave={addHabit} />
+    </div>
+  );
+}
+
+function HabitFormModal({ open, onClose, onSave }) {
+  const [name, setName] = useState('');
+  const [icon, setIcon] = useState('✨');
+  const [frequency, setFrequency] = useState('daily');
+  const icons = ['✨','🧘','🏃','📖','💧','📝','🎨','💪','🎵','🧹','💤','🥗','🌿','💊','🚶'];
+
+  useEffect(() => { if (open) { setName(''); setIcon('✨'); setFrequency('daily'); } }, [open]);
+
+  return (
+    <Modal open={open} onClose={onClose} title="New Habit"
+      footer={<><button className="btn btn-secondary" onClick={onClose}>Cancel</button><button className="btn btn-primary" onClick={() => { if (name.trim()) onSave({ name, icon, frequency }); }}>Create Habit</button></>}>
+      <div className="form-group">
+        <label className="form-label">Habit Name</label>
+        <input className="input" placeholder="e.g., Meditate for 10 minutes" value={name} onChange={e=>setName(e.target.value)} autoFocus />
+      </div>
+      <div className="form-group">
+        <label className="form-label">Icon</label>
+        <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+          {icons.map(ic => (
+            <div key={ic} onClick={() => setIcon(ic)}
+              style={{
+                width:40, height:40, borderRadius:'var(--radius-sm)', display:'flex', alignItems:'center', justifyContent:'center',
+                fontSize:'1.2rem', cursor:'pointer', border: icon === ic ? '2px solid var(--violet-500)' : '2px solid var(--border)',
+                background: icon === ic ? 'var(--violet-glow)' : 'var(--bg-tertiary)', transition:'all var(--transition)'
+              }}>{ic}</div>
+          ))}
+        </div>
+      </div>
+      <div className="form-group">
+        <label className="form-label">Frequency</label>
+        <select className="select" value={frequency} onChange={e=>setFrequency(e.target.value)}>
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+        </select>
+      </div>
+    </Modal>
+  );
+}
+
+// ===== ROUTINES PAGE =====
+function RoutinesPage({ routines, setRoutines, onLogActivity }) {
+  const [showForm, setShowForm] = useState(false);
+  const [editRoutine, setEditRoutine] = useState(null);
+
+  const startRoutine = (id) => {
+    setRoutines(prev => prev.map(r =>
+      r.id === id ? { ...r, activeStep: 0, steps: r.steps.map(s => ({...s, completed: false})) } : r
+    ));
+  };
+
+  const completeStep = (routineId, stepIndex) => {
+    setRoutines(prev => prev.map(r => {
+      if (r.id !== routineId) return r;
+      const newSteps = r.steps.map((s, i) => i === stepIndex ? {...s, completed: true} : s);
+      const nextStep = stepIndex + 1 < r.steps.length ? stepIndex + 1 : -1;
+      if (nextStep === -1 && onLogActivity) {
+        onLogActivity('routine', `Completed routine: "${r.name}"`, r.icon || '🔄', `${r.steps.length} steps finished`);
+      }
+      return { ...r, steps: newSteps, activeStep: nextStep };
+    }));
+  };
+
+  const resetRoutine = (id) => {
+    setRoutines(prev => prev.map(r =>
+      r.id === id ? { ...r, activeStep: -1, steps: r.steps.map(s => ({...s, completed: false})) } : r
+    ));
+  };
+
+  const deleteRoutine = (id) => {
+    const r = routines.find(x => x.id === id);
+    setRoutines(prev => prev.filter(x => x.id !== id));
+    if (onLogActivity && r) {
+      onLogActivity('routine', `Deleted routine: "${r.name}"`, '🗑️', '');
+    }
+  };
+
+  const saveRoutine = (routine) => {
+    if (editRoutine) {
+      setRoutines(prev => prev.map(r => r.id === editRoutine.id ? { ...r, ...routine } : r));
+      if (onLogActivity) {
+        onLogActivity('routine', `Updated routine: "${routine.name}"`, routine.icon || '🔄', `${routine.steps?.length || 0} steps`);
+      }
+    } else {
+      setRoutines(prev => [...prev, { ...routine, id: uid(), activeStep: -1 }]);
+      if (onLogActivity) {
+        onLogActivity('routine', `Created routine: "${routine.name}"`, routine.icon || '🔄', `${routine.steps?.length || 0} steps`);
+      }
+    }
+    setEditRoutine(null);
+    setShowForm(false);
+  };
+
+  const totalDuration = (steps) => steps.reduce((sum, s) => sum + (s.duration || 0), 0);
+
+  return (
+    <div className="fade-in">
+      <div className="page-header">
+        <h2>🔄 Routines</h2>
+        <p>Build powerful routines and follow them step by step.</p>
+        <div className="page-header-actions">
+          <button className="btn btn-primary" onClick={() => { setEditRoutine(null); setShowForm(true); }}>+ New Routine</button>
+        </div>
+      </div>
+
+      {routines.length === 0 ? (
+        <EmptyState icon="🌅" title="No routines yet" desc="Create a morning, evening or custom routine to structure your day."
+          action={<button className="btn btn-primary" onClick={() => setShowForm(true)}>+ Create Routine</button>} />
+      ) : (
+        <div>
+          {routines.map(routine => {
+            const isActive = routine.activeStep >= 0;
+            const completedSteps = routine.steps.filter(s => s.completed).length;
+            const allDone = completedSteps === routine.steps.length && routine.steps.length > 0;
+            return (
+              <div key={routine.id} className="routine-card slide-in">
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
+                  <div style={{display:'flex',alignItems:'center',gap:12}}>
+                    <span style={{fontSize:'1.5rem'}}>{routine.icon || '📋'}</span>
+                    <div>
+                      <h3 style={{fontWeight:700,fontSize:'1.05rem'}}>{routine.name}</h3>
+                      <span style={{fontSize:'0.8rem',color:'var(--text-muted)'}}>
+                        {routine.steps.length} steps · ~{totalDuration(routine.steps)} min
+                        {routine.type && ` · ${routine.type}`}
+                      </span>
+                    </div>
+                  </div>
+                  <div style={{display:'flex',gap:6}}>
+                    {!isActive && !allDone && (
+                      <button className="btn btn-primary btn-sm" onClick={() => startRoutine(routine.id)}>▶ Start</button>
+                    )}
+                    {(isActive || allDone) && (
+                      <button className="btn btn-secondary btn-sm" onClick={() => resetRoutine(routine.id)}>↺ Reset</button>
+                    )}
+                    <button className="btn btn-ghost btn-sm" onClick={() => { setEditRoutine(routine); setShowForm(true); }}>✏️</button>
+                    <button className="btn btn-ghost btn-sm" onClick={() => deleteRoutine(routine.id)}>🗑️</button>
+                  </div>
+                </div>
+
+                {allDone && (
+                  <div style={{textAlign:'center',padding:'12px',background:'var(--success-dim)',borderRadius:'var(--radius-md)',marginBottom:12,color:'var(--success)',fontWeight:600}}>
+                    🎉 Routine complete! Great job!
+                  </div>
+                )}
+
+                {routine.steps.map((step, idx) => {
+                  const isCurrent = routine.activeStep === idx;
+                  const isDone = step.completed;
+                  return (
+                    <div key={step.id} className={`routine-step ${isCurrent ? 'active-step' : ''} ${isDone ? 'completed-step' : ''}`}>
+                      <div className="step-number">{isDone ? '✓' : idx + 1}</div>
+                      <span style={{flex:1,fontWeight: isCurrent ? 600 : 400, textDecoration: isDone ? 'line-through' : 'none'}}>
+                        {step.title}
+                      </span>
+                      {step.duration > 0 && <span className="step-duration">{step.duration} min</span>}
+                      {isCurrent && (
+                        <button className="btn btn-primary btn-sm" onClick={() => completeStep(routine.id, idx)}>
+                          Done ✓
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <RoutineFormModal open={showForm} onClose={() => { setShowForm(false); setEditRoutine(null); }} onSave={saveRoutine} routine={editRoutine} />
+    </div>
+  );
+}
+
+function RoutineFormModal({ open, onClose, onSave, routine }) {
+  const [name, setName] = useState('');
+  const [type, setType] = useState('morning');
+  const [icon, setIcon] = useState('🌅');
+  const [steps, setSteps] = useState([]);
+  const [stepTitle, setStepTitle] = useState('');
+  const [stepDuration, setStepDuration] = useState(5);
+
+  const icons = ['🌅','🌙','☀️','💼','🏋️','📚','🧹','🎯','🧘','🍳'];
+
+  useEffect(() => {
+    if (routine) {
+      setName(routine.name); setType(routine.type); setIcon(routine.icon || '🌅');
+      setSteps(routine.steps.map(s => ({...s})));
+    } else {
+      setName(''); setType('morning'); setIcon('🌅'); setSteps([]);
+    }
+  }, [routine, open]);
+
+  const addStep = () => {
+    if (!stepTitle.trim()) return;
+    setSteps(prev => [...prev, { id: uid(), title: stepTitle.trim(), duration: Number(stepDuration) || 0, completed: false }]);
+    setStepTitle(''); setStepDuration(5);
+  };
+
+  const removeStep = (id) => setSteps(prev => prev.filter(s => s.id !== id));
+
+  const moveStep = (idx, dir) => {
+    const newSteps = [...steps];
+    const swap = idx + dir;
+    if (swap < 0 || swap >= newSteps.length) return;
+    [newSteps[idx], newSteps[swap]] = [newSteps[swap], newSteps[idx]];
+    setSteps(newSteps);
+  };
+
+  return (
+    <Modal open={open} onClose={onClose} title={routine ? 'Edit Routine' : 'New Routine'} wide
+      footer={<><button className="btn btn-secondary" onClick={onClose}>Cancel</button><button className="btn btn-primary" onClick={() => { if (name.trim() && steps.length > 0) onSave({ name, type, icon, steps }); }}>Save Routine</button></>}>
+      <div className="form-row">
+        <div className="form-group" style={{flex:2}}>
+          <label className="form-label">Name</label>
+          <input className="input" placeholder="e.g., Morning Routine" value={name} onChange={e=>setName(e.target.value)} autoFocus />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Type</label>
+          <select className="select" value={type} onChange={e=>setType(e.target.value)}>
+            <option value="morning">Morning</option>
+            <option value="evening">Evening</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+      </div>
+      <div className="form-group">
+        <label className="form-label">Icon</label>
+        <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+          {icons.map(ic => (
+            <div key={ic} onClick={() => setIcon(ic)}
+              style={{
+                width:36, height:36, borderRadius:'var(--radius-sm)', display:'flex', alignItems:'center', justifyContent:'center',
+                fontSize:'1.1rem', cursor:'pointer', border: icon === ic ? '2px solid var(--violet-500)' : '2px solid var(--border)',
+                background: icon === ic ? 'var(--violet-glow)' : 'var(--bg-tertiary)', transition:'all var(--transition)'
+              }}>{ic}</div>
+          ))}
+        </div>
+      </div>
+      <div className="form-group">
+        <label className="form-label">Steps</label>
+        {steps.map((s, i) => (
+          <div key={s.id} style={{display:'flex',alignItems:'center',gap:6,marginBottom:4,padding:'6px 8px',background:'var(--bg-tertiary)',borderRadius:'var(--radius-sm)'}}>
+            <span style={{color:'var(--text-muted)',fontSize:'0.8rem',width:20}}>{i+1}.</span>
+            <span style={{flex:1,fontSize:'0.9rem'}}>{s.title}</span>
+            <span style={{fontSize:'0.78rem',color:'var(--text-muted)'}}>{s.duration}m</span>
+            <button className="btn btn-ghost btn-sm" style={{padding:2}} onClick={() => moveStep(i, -1)}>↑</button>
+            <button className="btn btn-ghost btn-sm" style={{padding:2}} onClick={() => moveStep(i, 1)}>↓</button>
+            <button className="btn btn-ghost btn-sm" style={{padding:2}} onClick={() => removeStep(s.id)}>✕</button>
+          </div>
+        ))}
+        <div style={{display:'flex',gap:8,marginTop:8}}>
+          <input className="input" style={{flex:2}} placeholder="Step title..." value={stepTitle} onChange={e=>setStepTitle(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && addStep()} />
+          <input className="input" style={{width:70}} type="number" min="0" placeholder="Min" value={stepDuration} onChange={e=>setStepDuration(e.target.value)} />
+          <button className="btn btn-secondary" onClick={addStep}>+ Add</button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+// ===== JOURNAL PAGE =====
+function JournalPage({ journal, setJournal, onLogActivity }) {
+  const [selectedDate, setSelectedDate] = useState(td);
+  const [view, setView] = useState('write');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [calMonth, setCalMonth] = useState(new Date().getMonth());
+  const [calYear, setCalYear] = useState(new Date().getFullYear());
+  const lastLoggedRef = useRef('');
+
+  const entry = journal.find(j => j.date === selectedDate);
+  const [mood, setMood] = useState(entry?.mood || '');
+  const [content, setContent] = useState(entry?.content || '');
+  const [gratitude, setGratitude] = useState(entry?.gratitude || '');
+  const [currentPrompt] = useState(getRandomPrompt());
+
+  // Sync with selected entry
+  useEffect(() => {
+    const e = journal.find(j => j.date === selectedDate);
+    setMood(e?.mood || '');
+    setContent(e?.content || '');
+    setGratitude(e?.gratitude || '');
+  }, [selectedDate, journal]);
+
+  const saveEntry = () => {
+    if (!content.trim() && !mood && !gratitude.trim()) return;
+    const newEntry = { date: selectedDate, mood, content, gratitude, prompt: currentPrompt };
+    setJournal(prev => {
+      const exists = prev.find(j => j.date === selectedDate);
+      if (exists) {
+        return prev.map(j => j.date === selectedDate ? { ...j, ...newEntry } : j);
+      }
+      return [...prev, { ...newEntry, id: uid() }];
+    });
+    // Log to activity once per session/change
+    const key = `${selectedDate}_${content.slice(0, 20)}`;
+    if (onLogActivity && lastLoggedRef.current !== key) {
+      lastLoggedRef.current = key;
+      const moodEmoji = MOODS.find(m => m.value === mood)?.emoji || '📝';
+      onLogActivity('journal', `Saved journal reflection (${fmtDate(selectedDate)})`, moodEmoji, mood ? `Mood: ${mood}` : 'Daily reflection', selectedDate);
+    }
+  };
+
+  // Auto-save on change
+  useEffect(() => {
+    const timer = setTimeout(saveEntry, 800);
+    return () => clearTimeout(timer);
+  }, [mood, content, gratitude]);
+
+  const deleteEntry = (date) => setJournal(prev => prev.filter(j => j.date !== date));
+
+  const calDays = getMonthDays(calYear, calMonth);
+  const entryDates = new Set(journal.map(j => j.date));
+
+  const filteredEntries = journal
+    .filter(j => !searchTerm || j.content.toLowerCase().includes(searchTerm.toLowerCase()) || j.gratitude.toLowerCase().includes(searchTerm.toLowerCase()))
+    .sort((a, b) => b.date.localeCompare(a.date));
+
+  return (
+    <div className="fade-in">
+      <div className="page-header">
+        <h2>📝 Journal</h2>
+        <p>Reflect, record, and grow — one day at a time.</p>
+      </div>
+
+      <div className="tabs">
+        {[
+          { key: 'write', label: '✍️ Write' },
+          { key: 'calendar', label: '📅 Calendar' },
+          { key: 'entries', label: '📚 All Entries' },
+        ].map(tab => (
+          <div key={tab.key} className={`tab ${view===tab.key?'active':''}`} onClick={() => setView(tab.key)}>{tab.label}</div>
+        ))}
+      </div>
+
+      {view === 'write' && (
+        <div className="slide-in">
+          <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:20}}>
+            <h3 style={{fontSize:'1.1rem',fontWeight:600}}>{fmtDateFull(selectedDate)}</h3>
+            <input type="date" className="input" style={{width:'auto'}} value={selectedDate} onChange={e => setSelectedDate(e.target.value)} />
+          </div>
+
+          {/* Mood */}
+          <div className="card" style={{marginBottom:16}}>
+            <label className="form-label" style={{marginBottom:10}}>How are you feeling?</label>
+            <div className="mood-selector">
+              {MOODS.map(m => (
+                <button key={m.value} className={`mood-btn ${mood === m.value ? 'selected' : ''}`}
+                  onClick={() => setMood(mood === m.value ? '' : m.value)} title={m.label}>
+                  {m.emoji}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Writing Prompt */}
+          <div className="card card-glow" style={{marginBottom:16,display:'flex',alignItems:'center',gap:12}}>
+            <span style={{fontSize:'1.5rem'}}>💡</span>
+            <div>
+              <div style={{fontSize:'0.78rem',color:'var(--text-muted)',marginBottom:2}}>Today's Prompt</div>
+              <div style={{color:'var(--violet-300)',fontStyle:'italic'}}>{currentPrompt}</div>
+            </div>
+          </div>
+
+          {/* Journal Entry */}
+          <div className="form-group">
+            <label className="form-label">What's on your mind?</label>
+            <textarea className="textarea" style={{minHeight:180}} placeholder="Write freely..."
+              value={content} onChange={e => setContent(e.target.value)} />
+          </div>
+
+          {/* Gratitude */}
+          <div className="form-group">
+            <label className="form-label">🙏 Gratitude Notes</label>
+            <textarea className="textarea" style={{minHeight:80}} placeholder="What are you grateful for today?"
+              value={gratitude} onChange={e => setGratitude(e.target.value)} />
+          </div>
+
+          <div style={{fontSize:'0.8rem',color:'var(--text-muted)',textAlign:'center',marginTop:8}}>
+            ✨ Auto-saved
+          </div>
+        </div>
+      )}
+
+      {view === 'calendar' && (
+        <div className="card slide-in">
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
+            <button className="btn btn-ghost btn-sm" onClick={() => { if (calMonth === 0) { setCalMonth(11); setCalYear(calYear - 1); } else setCalMonth(calMonth - 1); }}>← Prev</button>
+            <h3 style={{fontWeight:700}}>{monthNames[calMonth]} {calYear}</h3>
+            <button className="btn btn-ghost btn-sm" onClick={() => { if (calMonth === 11) { setCalMonth(0); setCalYear(calYear + 1); } else setCalMonth(calMonth + 1); }}>Next →</button>
+          </div>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:4,marginBottom:8}}>
+            {weekDays.map(d => <div key={d} style={{textAlign:'center',fontSize:'0.75rem',color:'var(--text-muted)',fontWeight:600,padding:4}}>{d}</div>)}
+          </div>
+          <div className="journal-calendar">
+            {calDays.map((day, i) => (
+              <div key={i}
+                className={`journal-cal-day ${day.otherMonth ? 'other-month' : ''} ${entryDates.has(day.date) ? 'has-entry' : ''} ${isToday(day.date) ? 'today' : ''}`}
+                onClick={() => { setSelectedDate(day.date); setView('write'); }}
+                title={entryDates.has(day.date) ? `Entry on ${fmtDate(day.date)}` : ''}
+              >
+                {day.day}
+              </div>
+            ))}
+          </div>
+          <div style={{marginTop:12,fontSize:'0.82rem',color:'var(--text-muted)',textAlign:'center'}}>
+            Click a day to view or write an entry. Highlighted days have entries.
+          </div>
+        </div>
+      )}
+
+      {view === 'entries' && (
+        <div className="slide-in">
+          <div className="search-bar" style={{marginBottom:16}}>
+            <span className="search-icon">🔍</span>
+            <input className="input" placeholder="Search journal entries..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+          </div>
+          {filteredEntries.length === 0 ? (
+            <EmptyState icon="📔" title="No entries found" desc={searchTerm ? 'Try a different search term.' : "Start writing to see entries here."} />
+          ) : (
+            filteredEntries.map(entry => (
+              <div key={entry.id || entry.date} className="card" style={{marginBottom:12,cursor:'pointer'}} onClick={() => { setSelectedDate(entry.date); setView('write'); }}>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+                  <div style={{display:'flex',alignItems:'center',gap:8}}>
+                    <span style={{fontSize:'1.3rem'}}>{MOODS.find(m => m.value === entry.mood)?.emoji || '📝'}</span>
+                    <div>
+                      <div style={{fontWeight:600,fontSize:'0.95rem'}}>{fmtDateFull(entry.date)}</div>
+                      <div style={{fontSize:'0.78rem',color:'var(--text-muted)'}}>Feeling {entry.mood || 'unset'}</div>
+                    </div>
+                  </div>
+                  <button className="btn btn-ghost btn-sm" onClick={e => { e.stopPropagation(); deleteEntry(entry.date); }}>🗑️</button>
+                </div>
+                <p style={{fontSize:'0.9rem',color:'var(--text-secondary)',lineHeight:1.6}}>
+                  {entry.content.slice(0, 200)}{entry.content.length > 200 ? '...' : ''}
+                </p>
+                {entry.gratitude && (
+                  <div style={{marginTop:8,padding:'8px 12px',background:'var(--violet-glow)',borderRadius:'var(--radius-sm)',fontSize:'0.85rem',color:'var(--violet-300)'}}>
+                    🙏 {entry.gratitude}
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ===== REMINDERS PAGE =====
+function RemindersPage({ reminders, setReminders, onLogActivity }) {
+  const [view, setView] = useState('upcoming'); // 'upcoming', 'all', 'completed'
+  const [showForm, setShowForm] = useState(false);
+  const [editingReminder, setEditingReminder] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const nowMinutes = new Date().toISOString().slice(0, 16);
+
+  const filtered = useMemo(() => {
+    let list = reminders;
+    if (searchTerm) {
+      const q = searchTerm.toLowerCase();
+      list = list.filter(r => r.title.toLowerCase().includes(q) || (r.note && r.note.toLowerCase().includes(q)));
+    }
+    if (view === 'upcoming') {
+      return list.filter(r => r.status === 'pending').sort((a,b) => (a.datetime || '').localeCompare(b.datetime || ''));
+    } else if (view === 'completed') {
+      return list.filter(r => r.status === 'completed' || r.status === 'dismissed');
+    }
+    return [...list].sort((a,b) => (a.datetime || '').localeCompare(b.datetime || ''));
+  }, [reminders, view, searchTerm]);
+
+  const toggleReminder = (id) => {
+    setReminders(prev => prev.map(r => {
+      if (r.id !== id) return r;
+      const isDone = r.status === 'completed';
+      const newStatus = isDone ? 'pending' : 'completed';
+      if (!isDone && onLogActivity) {
+        onLogActivity('reminder', `Completed reminder: "${r.title}"`, '🔔', r.note || 'Marked done');
+      }
+      return { ...r, status: newStatus };
+    }));
+  };
+
+  const snoozeReminder = (id, minutes = 15) => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + minutes);
+    const newDatetime = now.toISOString().slice(0, 16);
+    setReminders(prev => prev.map(r => {
+      if (r.id !== id) return r;
+      if (onLogActivity) {
+        onLogActivity('reminder', `Snoozed reminder: "${r.title}" (+${minutes}m)`, '⏰', `Rescheduled to ${newDatetime.replace('T', ' ')}`);
+      }
+      return { ...r, datetime: newDatetime, status: 'pending' };
+    }));
+  };
+
+  const deleteReminder = (id) => {
+    setReminders(prev => prev.filter(r => r.id !== id));
+  };
+
+  const saveReminder = (item) => {
+    if (editingReminder) {
+      setReminders(prev => prev.map(r => r.id === editingReminder.id ? { ...editingReminder, ...item } : r));
+      if (onLogActivity) {
+        onLogActivity('reminder', `Updated reminder: "${item.title}"`, '🔔', `Due: ${item.datetime?.replace('T', ' ')}`);
+      }
+    } else {
+      const newReminder = { ...item, id: uid(), status: 'pending', createdAt: td };
+      setReminders(prev => [newReminder, ...prev]);
+      if (onLogActivity) {
+        onLogActivity('reminder', `Created reminder: "${item.title}"`, '🔔', `Due: ${item.datetime?.replace('T', ' ')}`);
+      }
+    }
+    setEditingReminder(null);
+    setShowForm(false);
+  };
+
+  const getTypeIcon = (type) => {
+    switch (type) {
+      case 'wellness': return '🌿';
+      case 'task': return '📋';
+      case 'habit': return '🔥';
+      case 'routine': return '🔄';
+      case 'journal': return '📝';
+      default: return '🔔';
+    }
+  };
+
+  const formatReminderTime = (dt) => {
+    if (!dt) return '';
+    const [datePart, timePart] = dt.split('T');
+    let dateLabel = fmtDate(datePart);
+    if (datePart === td) dateLabel = 'Today';
+    else if (datePart === tmr) dateLabel = 'Tomorrow';
+
+    if (timePart) {
+      const [h, m] = timePart.split(':');
+      const hour = parseInt(h, 10);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const formattedHour = hour % 12 || 12;
+      return `${dateLabel} at ${formattedHour}:${m} ${ampm}`;
+    }
+    return dateLabel;
+  };
+
+  const pendingCount = reminders.filter(r => r.status === 'pending').length;
+  const completedCount = reminders.filter(r => r.status === 'completed' || r.status === 'dismissed').length;
+
+  return (
+    <div className="fade-in">
+      <div className="page-header">
+        <h2>🔔 Reminders</h2>
+        <p>Gentle nudges, mindful alerts, and scheduled cues throughout your day.</p>
+        <div className="page-header-actions" style={{flexWrap:'wrap'}}>
+          <button className="btn btn-primary" onClick={() => { setEditingReminder(null); setShowForm(true); }}>
+            + New Reminder
+          </button>
+          <button className="btn btn-secondary btn-sm" onClick={playCozyChime} title="Test harmonic cozy chime">
+            🎵 Test Chime
+          </button>
+          <div className="search-bar" style={{flex:1, minWidth:200, maxWidth:300}}>
+            <span className="search-icon">🔍</span>
+            <input className="input" placeholder="Search reminders..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+          </div>
+        </div>
+      </div>
+
+      <div className="tabs">
+        {[
+          { key: 'upcoming', label: `Upcoming & Due (${pendingCount})` },
+          { key: 'all', label: `All (${reminders.length})` },
+          { key: 'completed', label: `Completed (${completedCount})` },
+        ].map(tab => (
+          <div key={tab.key} className={`tab ${view === tab.key ? 'active' : ''}`} onClick={() => setView(tab.key)}>
+            {tab.label}
+          </div>
+        ))}
+      </div>
+
+      {filtered.length === 0 ? (
+        <EmptyState
+          icon={view === 'completed' ? '🏆' : '🔔'}
+          title={view === 'completed' ? 'No completed reminders yet' : 'No upcoming reminders'}
+          desc={view === 'completed' ? 'Completed reminders will appear here.' : 'Add a reminder to stay gently nudged on what matters.'}
+          action={view !== 'completed' && (
+            <button className="btn btn-primary" onClick={() => { setEditingReminder(null); setShowForm(true); }}>
+              + Add Reminder
+            </button>
+          )}
+        />
+      ) : (
+        <div>
+          {filtered.map(r => {
+            const isCompleted = r.status === 'completed' || r.status === 'dismissed';
+            const isDue = !isCompleted && r.datetime && r.datetime <= nowMinutes;
+            return (
+              <div key={r.id} className={`reminder-item slide-in ${isDue ? 'due' : ''} ${isCompleted ? 'completed' : ''}`}>
+                <Checkbox checked={isCompleted} onChange={() => toggleReminder(r.id)} priority={r.priority} />
+                <div className="reminder-icon-box">{getTypeIcon(r.type)}</div>
+                <div className="reminder-info">
+                  <div style={{display:'flex', alignItems:'center', gap:8}}>
+                    <span className="reminder-title">{r.title}</span>
+                    {isDue && <span className="chip chip-warning">⚠️ Due Now</span>}
+                  </div>
+                  {r.note && <div className="reminder-note">{r.note}</div>}
+                  <div className="reminder-meta">
+                    <span>⏰ {formatReminderTime(r.datetime)}</span>
+                    {r.priority && r.priority !== 'none' && (
+                      <span className={`chip chip-${PRIORITIES[r.priority]?.color || 'violet'}`}>
+                        {PRIORITIES[r.priority]?.label || r.priority}
+                      </span>
+                    )}
+                    {r.repeat && r.repeat !== 'none' && (
+                      <span className="chip chip-blue">🔄 {r.repeat}</span>
+                    )}
+                  </div>
+                </div>
+                <div style={{display:'flex', alignItems:'center', gap:6}}>
+                  {!isCompleted && (
+                    <button className="btn btn-secondary btn-sm" onClick={() => snoozeReminder(r.id, 15)} title="Snooze 15 minutes">
+                      ⏰ +15m
+                    </button>
+                  )}
+                  <button className="btn btn-ghost btn-sm" onClick={() => { setEditingReminder(r); setShowForm(true); }} title="Edit">
+                    ✏️
+                  </button>
+                  <button className="btn btn-ghost btn-sm" onClick={() => deleteReminder(r.id)} title="Delete">
+                    🗑️
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Reminder Form Modal */}
+      <ReminderFormModal
+        open={showForm}
+        onClose={() => { setShowForm(false); setEditingReminder(null); }}
+        onSave={saveReminder}
+        reminder={editingReminder}
+      />
+    </div>
+  );
+}
+
+function ReminderFormModal({ open, onClose, onSave, reminder }) {
+  const [title, setTitle] = useState('');
+  const [date, setDate] = useState(td);
+  const [time, setTime] = useState('14:00');
+  const [type, setType] = useState('wellness');
+  const [priority, setPriority] = useState('medium');
+  const [repeat, setRepeat] = useState('none');
+  const [note, setNote] = useState('');
+
+  useEffect(() => {
+    if (reminder) {
+      setTitle(reminder.title);
+      if (reminder.datetime) {
+        const parts = reminder.datetime.split('T');
+        setDate(parts[0] || td);
+        setTime(parts[1] || '12:00');
+      }
+      setType(reminder.type || 'wellness');
+      setPriority(reminder.priority || 'medium');
+      setRepeat(reminder.repeat || 'none');
+      setNote(reminder.note || '');
+    } else {
+      setTitle('');
+      setDate(td);
+      const now = new Date();
+      now.setMinutes(now.getMinutes() + 30);
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      setTime(`${h}:${m}`);
+      setType('wellness');
+      setPriority('medium');
+      setRepeat('none');
+      setNote('');
+    }
+  }, [reminder, open]);
+
+  const handleSave = () => {
+    if (!title.trim()) return;
+    const datetime = `${date}T${time}`;
+    onSave({
+      title: title.trim(),
+      datetime,
+      type,
+      priority,
+      repeat,
+      note: note.trim()
+    });
+  };
+
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={reminder ? 'Edit Reminder' : 'New Reminder'}
+      footer={
+        <>
+          <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
+          <button className="btn btn-primary" onClick={handleSave}>Save Reminder</button>
+        </>
+      }
+    >
+      <div className="form-group">
+        <label className="form-label">Reminder Title</label>
+        <input
+          className="input"
+          placeholder="e.g. Afternoon stretch & water break"
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+          autoFocus
+        />
+      </div>
+
+      <div className="form-row">
+        <div className="form-group">
+          <label className="form-label">Date</label>
+          <input className="input" type="date" value={date} onChange={e => setDate(e.target.value)} />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Time</label>
+          <input className="input" type="time" value={time} onChange={e => setTime(e.target.value)} />
+        </div>
+      </div>
+
+      <div className="form-row">
+        <div className="form-group">
+          <label className="form-label">Category</label>
+          <select className="select" value={type} onChange={e => setType(e.target.value)}>
+            <option value="wellness">🌿 Wellness</option>
+            <option value="task">📋 Task</option>
+            <option value="habit">🔥 Habit</option>
+            <option value="routine">🔄 Routine</option>
+            <option value="journal">📝 Reflection</option>
+            <option value="custom">🔔 Custom</option>
+          </select>
+        </div>
+        <div className="form-group">
+          <label className="form-label">Priority</label>
+          <select className="select" value={priority} onChange={e => setPriority(e.target.value)}>
+            <option value="low">🔵 Low</option>
+            <option value="medium">🟡 Medium</option>
+            <option value="high">🔴 High</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="form-group">
+        <label className="form-label">Repeat</label>
+        <select className="select" value={repeat} onChange={e => setRepeat(e.target.value)}>
+          <option value="none">Does not repeat</option>
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+        </select>
+      </div>
+
+      <div className="form-group">
+        <label className="form-label">Note (Optional)</label>
+        <textarea
+          className="textarea"
+          style={{minHeight: 70}}
+          placeholder="Any helpful notes or instructions..."
+          value={note}
+          onChange={e => setNote(e.target.value)}
+        />
+      </div>
+    </Modal>
+  );
+}
+
+// ===== PAST ACTIVITY RECORDS PAGE =====
+function ActivityPage({ activity, setActivity, tasks, habits, routines, journal }) {
+  const [filterType, setFilterType] = useState('all'); // 'all', 'task', 'habit', 'routine', 'journal', 'planner', 'reminder'
+  const [timeRange, setTimeRange] = useState('all'); // 'all', 'today', 'yesterday', '7days', '30days'
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Summary Metrics
+  const totalEntries = activity.length;
+  const completedTasksCount = tasks.filter(t => t.completed).length;
+  const totalHabits = habits.length;
+  const totalJournalCount = journal.length;
+
+  const filtered = useMemo(() => {
+    let list = activity;
+    if (filterType !== 'all') {
+      list = list.filter(a => a.type === filterType);
+    }
+    if (timeRange === 'today') {
+      list = list.filter(a => a.date === td);
+    } else if (timeRange === 'yesterday') {
+      list = list.filter(a => a.date === y1);
+    } else if (timeRange === '7days') {
+      const sevenDaysAgo = addDays(td, -7);
+      list = list.filter(a => a.date >= sevenDaysAgo);
+    } else if (timeRange === '30days') {
+      const thirtyDaysAgo = addDays(td, -30);
+      list = list.filter(a => a.date >= thirtyDaysAgo);
+    }
+    if (searchTerm) {
+      const q = searchTerm.toLowerCase();
+      list = list.filter(a => (a.title && a.title.toLowerCase().includes(q)) || (a.details && a.details.toLowerCase().includes(q)));
+    }
+    return [...list].sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0) || (b.date || '').localeCompare(a.date || ''));
+  }, [activity, filterType, timeRange, searchTerm]);
+
+  // Group by date
+  const groupedByDate = useMemo(() => {
+    const groups = {};
+    filtered.forEach(item => {
+      const d = item.date || td;
+      if (!groups[d]) groups[d] = [];
+      groups[d].push(item);
+    });
+    return groups;
+  }, [filtered]);
+
+  const handleExport = () => {
+    const exportData = {
+      exportedAt: new Date().toISOString(),
+      appName: 'Gilded Hours',
+      totalRecords: activity.length,
+      activity
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `gilded_hours_activity_${td}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleClearHistory = () => {
+    if (window.confirm('Are you sure you want to clear your past activity history? This will reset the timeline.')) {
+      setActivity([]);
+    }
+  };
+
+  const sortedDates = Object.keys(groupedByDate).sort((a,b) => b.localeCompare(a));
+
+  return (
+    <div className="fade-in">
+      <div className="page-header">
+        <h2>📜 Past Activity Records</h2>
+        <p>A continuous, mindful history of everything you've accomplished and reflected upon.</p>
+        <div className="page-header-actions" style={{flexWrap:'wrap'}}>
+          <button className="btn btn-secondary btn-sm" onClick={handleExport} title="Export activity history">
+            📥 Export History
+          </button>
+          {activity.length > 0 && (
+            <button className="btn btn-ghost btn-sm" onClick={handleClearHistory} title="Clear history">
+              🗑️ Clear
+            </button>
+          )}
+          <div className="search-bar" style={{flex:1, minWidth:200, maxWidth:300}}>
+            <span className="search-icon">🔍</span>
+            <input className="input" placeholder="Search activity records..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Summary Grid */}
+      <div className="activity-stats-grid">
+        <div className="activity-stat-card">
+          <div className="activity-stat-num">{totalEntries}</div>
+          <div className="activity-stat-label">Milestones Logged</div>
+        </div>
+        <div className="activity-stat-card">
+          <div className="activity-stat-num">{completedTasksCount}</div>
+          <div className="activity-stat-label">Tasks Completed</div>
+        </div>
+        <div className="activity-stat-card">
+          <div className="activity-stat-num">{totalHabits}</div>
+          <div className="activity-stat-label">Active Habits</div>
+        </div>
+        <div className="activity-stat-card">
+          <div className="activity-stat-num">{totalJournalCount}</div>
+          <div className="activity-stat-label">Reflections Recorded</div>
+        </div>
+      </div>
+
+      {/* Filters: Category Pills */}
+      <div className="tabs" style={{overflowX:'auto', flexWrap:'nowrap'}}>
+        {[
+          { key: 'all', label: `All (${activity.length})` },
+          { key: 'task', label: '✅ Tasks' },
+          { key: 'habit', label: '🔥 Habits' },
+          { key: 'routine', label: '🔄 Routines' },
+          { key: 'journal', label: '📝 Journal' },
+          { key: 'planner', label: '🕐 Planner' },
+          { key: 'reminder', label: '🔔 Reminders' },
+          { key: 'profile', label: '👤 Profile' },
+        ].map(tab => (
+          <div key={tab.key} className={`tab ${filterType === tab.key ? 'active' : ''}`} onClick={() => setFilterType(tab.key)}>
+            {tab.label}
+          </div>
+        ))}
+      </div>
+
+      {/* Secondary filter: Date Range */}
+      <div style={{display:'flex', gap:8, alignItems:'center', marginBottom:20, flexWrap:'wrap'}}>
+        <span style={{fontSize:'0.82rem', color:'var(--text-muted)'}}>Time range:</span>
+        {[
+          { key: 'all', label: 'All Time' },
+          { key: 'today', label: 'Today' },
+          { key: 'yesterday', label: 'Yesterday' },
+          { key: '7days', label: 'Past 7 Days' },
+          { key: '30days', label: 'This Month' },
+        ].map(r => (
+          <button
+            key={r.key}
+            className={`btn btn-sm ${timeRange === r.key ? 'btn-primary' : 'btn-secondary'}`}
+            style={{padding:'4px 10px', fontSize:'0.78rem'}}
+            onClick={() => setTimeRange(r.key)}
+          >
+            {r.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Timeline Stream */}
+      {sortedDates.length === 0 ? (
+        <EmptyState
+          icon="📜"
+          title="No activity records yet"
+          desc={searchTerm ? 'No activity matches your search filter.' : 'Your real actions and milestones will automatically appear here as you complete tasks, build habits, and plan your day.'}
+        />
+      ) : (
+        sortedDates.map(dateKey => {
+          const items = groupedByDate[dateKey];
+          let dateHeader = fmtDateFull(dateKey);
+          if (dateKey === td) dateHeader = `📍 Today — ${fmtDateFull(dateKey)}`;
+          else if (dateKey === y1) dateHeader = `Yesterday — ${fmtDateFull(dateKey)}`;
+
+          return (
+            <div key={dateKey} style={{marginBottom: 28}}>
+              <div style={{fontWeight: 700, fontSize: '1rem', color: 'var(--violet-200)', marginBottom: 14, display:'flex', alignItems:'center', gap:8}}>
+                <span>📅</span>
+                <span>{dateHeader}</span>
+                <span style={{fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 500}}>({items.length} {items.length === 1 ? 'record' : 'records'})</span>
+              </div>
+
+              <div className="timeline-stream">
+                {items.map(item => (
+                  <div key={item.id} className="timeline-entry">
+                    <div className="timeline-dot" />
+                    <div className="timeline-card">
+                      <div className="timeline-header">
+                        <div className="timeline-title">
+                          <span>{item.icon || '✨'}</span>
+                          <span>{item.title}</span>
+                        </div>
+                        <div className="timeline-time">{item.time || ''}</div>
+                      </div>
+                      {item.details && <div className="timeline-details">{item.details}</div>}
+                      <div className="timeline-tags">
+                        <span className="chip chip-violet">{item.type?.toUpperCase()}</span>
+                        <span className="chip chip-blue">{fmtDate(item.date)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })
+      )}
+    </div>
+  );
+}
+
+// ===== AUTHENTICATION SCREEN =====
+function AuthScreen({ onLogin }) {
+  const [mode, setMode] = useState('signin'); // 'signin' or 'signup'
+
+  // Sign In form state
+  const [loginIdentifier, setLoginIdentifier] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+
+  // Sign Up form state
+  const [signupName, setSignupName] = useState('');
+  const [signupUsername, setSignupUsername] = useState('');
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
+  const [signupConfirmPassword, setSignupConfirmPassword] = useState('');
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
+  const [selectedAvatar, setSelectedAvatar] = useState('✨');
+
+  // Alerts
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
+
+  const avatarOptions = ['✨', '🌸', '☕', '🌿', '🌙', '🕯️', '🎧', '🪐', '🦊', '🍵', '🎨', '💫'];
+
+  const handleSignIn = (e) => {
+    if (e) e.preventDefault();
+    setErrorMsg('');
+    setSuccessMsg('');
+
+    const identifier = loginIdentifier.trim().toLowerCase();
+    const password = loginPassword;
+
+    if (!identifier || !password) {
+      setErrorMsg('Please enter your username/email and password.');
+      return;
+    }
+
+    const users = getRegisteredUsers();
+    const user = users.find(u =>
+      (u.username?.toLowerCase() === identifier || u.email?.toLowerCase() === identifier) &&
+      u.password === password
+    );
+
+    if (!user) {
+      setErrorMsg('Invalid email/username or password. Please try again.');
+      return;
+    }
+
+    setSuccessMsg(`Welcome back, ${user.name}! Opening your planner...`);
+    setTimeout(() => {
+      onLogin(user);
+    }, 300);
+  };
+
+  const handleSignUp = (e) => {
+    if (e) e.preventDefault();
+    setErrorMsg('');
+    setSuccessMsg('');
+
+    const name = signupName.trim();
+    const username = signupUsername.trim().toLowerCase();
+    const email = signupEmail.trim().toLowerCase();
+    const password = signupPassword;
+
+    if (!name || !username || !email || !password) {
+      setErrorMsg('Please fill in all required fields.');
+      return;
+    }
+
+    if (username.length < 3) {
+      setErrorMsg('Username must be at least 3 characters.');
+      return;
+    }
+
+    if (!email.includes('@') || !email.includes('.')) {
+      setErrorMsg('Please enter a valid email address.');
+      return;
+    }
+
+    if (password.length < 4) {
+      setErrorMsg('Password must be at least 4 characters.');
+      return;
+    }
+
+    if (password !== signupConfirmPassword) {
+      setErrorMsg('Passwords do not match.');
+      return;
+    }
+
+    const users = getRegisteredUsers();
+    const exists = users.some(u =>
+      u.username?.toLowerCase() === username || u.email?.toLowerCase() === email
+    );
+
+    if (exists) {
+      setErrorMsg('An account with this username or email already exists. Please sign in instead.');
+      return;
+    }
+
+    const newUser = {
+      id: uid(),
+      name,
+      username,
+      email,
+      password,
+      avatar: selectedAvatar || '✨',
+      bio: '',
+      affirmation: '',
+      themeAccent: '#7C3AED',
+      createdAt: today()
+    };
+
+    // Save to registered users
+    users.push(newUser);
+    saveRegisteredUsers(users);
+
+    // Initialize clean personal storage for this user
+    save(getUserKey(newUser.id, 'tasks'), []);
+    save(getUserKey(newUser.id, 'blocks'), []);
+    save(getUserKey(newUser.id, 'habits'), []);
+    save(getUserKey(newUser.id, 'routines'), []);
+    save(getUserKey(newUser.id, 'journal'), []);
+    save(getUserKey(newUser.id, 'reminders'), []);
+    save(getUserKey(newUser.id, 'activity'), []);
+    purgeAllFakeUserData(newUser.id);
+
+    setSuccessMsg(`Account created! Welcome to Gilded Hours, ${name}...`);
+    setTimeout(() => {
+      onLogin(newUser);
+    }, 400);
+  };
+
+  const handleQuickDemo = () => {
+    setErrorMsg('');
+    const users = getRegisteredUsers();
+    let demoUser = users.find(u => u.username === 'demo' || u.id === 'user_demo');
+    if (!demoUser) {
+      demoUser = {
+        id: 'user_demo',
+        name: 'Aadhanya',
+        username: 'demo',
+        email: 'demo@gildedhours.com',
+        password: 'password123',
+        avatar: '🌸',
+        bio: 'Architect of calm days & mindful thoughts',
+        affirmation: 'Focus on progress, not perfection.',
+        themeAccent: '#7C3AED',
+        createdAt: today()
+      };
+      users.push(demoUser);
+      saveRegisteredUsers(users);
+    }
+    // Clean all fake data from demo user's store
+    purgeAllFakeUserData(demoUser.id);
+
+    setLoginIdentifier('demo');
+    setLoginPassword('password123');
+    setSuccessMsg('Signing in with demo account...');
+    setTimeout(() => {
+      onLogin(demoUser);
+    }, 300);
+  };
+
+  return (
+    <div className="auth-wrapper">
+      <div className="auth-ambient-glow" />
+      <div className="auth-card">
+        <div className="auth-logo-header">
+          <div className="auth-logo-badge">⏳</div>
+          <h1 className="auth-title">Gilded Hours</h1>
+          <p className="auth-subtitle">Your quiet sanctuary for focus, habits, and daily reflection.</p>
+        </div>
+
+        <div className="auth-tabs-nav">
+          <button
+            type="button"
+            className={`auth-tab-btn ${mode === 'signin' ? 'active' : ''}`}
+            onClick={() => { setMode('signin'); setErrorMsg(''); setSuccessMsg(''); }}
+          >
+            Sign In
+          </button>
+          <button
+            type="button"
+            className={`auth-tab-btn ${mode === 'signup' ? 'active' : ''}`}
+            onClick={() => { setMode('signup'); setErrorMsg(''); setSuccessMsg(''); }}
+          >
+            Create Account
+          </button>
+        </div>
+
+        {errorMsg && (
+          <div className="auth-alert-box auth-alert-error">
+            <span>⚠️</span>
+            <span>{errorMsg}</span>
+          </div>
+        )}
+
+        {successMsg && (
+          <div className="auth-alert-box auth-alert-success">
+            <span>✨</span>
+            <span>{successMsg}</span>
+          </div>
+        )}
+
+        {mode === 'signin' ? (
+          <form onSubmit={handleSignIn}>
+            <div className="form-group">
+              <label className="form-label">Username or Email</label>
+              <input
+                className="input"
+                type="text"
+                placeholder="e.g. demo or you@email.com"
+                value={loginIdentifier}
+                onChange={e => setLoginIdentifier(e.target.value)}
+                autoFocus
+              />
+            </div>
+
+            <div className="form-group">
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:6}}>
+                <label className="form-label" style={{marginBottom:0}}>Password</label>
+                <button
+                  type="button"
+                  style={{background:'none', border:'none', color:'var(--violet-400)', fontSize:'0.75rem', cursor:'pointer'}}
+                  onClick={() => setShowLoginPassword(!showLoginPassword)}
+                >
+                  {showLoginPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
+              <input
+                className="input"
+                type={showLoginPassword ? 'text' : 'password'}
+                placeholder="••••••••"
+                value={loginPassword}
+                onChange={e => setLoginPassword(e.target.value)}
+              />
+            </div>
+
+            <button type="submit" className="btn btn-primary" style={{width:'100%', padding:'12px', marginTop:8}}>
+              Sign In to Sanctuary →
+            </button>
+
+            <div className="auth-demo-box">
+              <div style={{fontSize:'0.8rem', color:'var(--text-muted)', marginBottom:10}}>
+                Testing or exploring? Use 1-click demo access:
+              </div>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                style={{width:'100%', borderColor:'rgba(124,58,237,0.3)', color:'var(--violet-300)'}}
+                onClick={handleQuickDemo}
+              >
+                ✨ Sign In with Demo Account (demo / password123)
+              </button>
+            </div>
+          </form>
+        ) : (
+          <form onSubmit={handleSignUp}>
+            <div className="form-group">
+              <label className="form-label">Your Name</label>
+              <input
+                className="input"
+                type="text"
+                placeholder="e.g. Maya"
+                value={signupName}
+                onChange={e => setSignupName(e.target.value)}
+                autoFocus
+              />
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Username</label>
+                <input
+                  className="input"
+                  type="text"
+                  placeholder="e.g. maya"
+                  value={signupUsername}
+                  onChange={e => setSignupUsername(e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Email</label>
+                <input
+                  className="input"
+                  type="email"
+                  placeholder="maya@example.com"
+                  value={signupEmail}
+                  onChange={e => setSignupEmail(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Password</label>
+                <input
+                  className="input"
+                  type={showSignupPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  value={signupPassword}
+                  onChange={e => setSignupPassword(e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Confirm Password</label>
+                <input
+                  className="input"
+                  type={showSignupPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  value={signupConfirmPassword}
+                  onChange={e => setSignupConfirmPassword(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Profile Avatar</label>
+              <CustomAvatarPicker avatar={selectedAvatar} onChange={setSelectedAvatar} />
+            </div>
+
+
+            <button type="submit" className="btn btn-primary" style={{width:'100%', padding:'12px', marginTop:8}}>
+              Create Account & Enter →
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ===== AUTHENTICATED APPLICATION =====
+function AuthenticatedApp({ user, onLogout, onUpdateUser }) {
+  const [page, setPage] = useState('dashboard');
+  const [showProfileModal, setShowProfileModal] = useState(false);
+
+  // Apply cozy theme accent color
+  useEffect(() => {
+    if (user?.themeAccent) {
+      applyThemeAccent(user.themeAccent);
+    }
+  }, [user?.themeAccent]);
+
+  // Initialize data store specific to this authenticated user with fake data filtering
+  const initUserStore = (type, isFakeFn) => {
+    const key = getUserKey(user.id, type);
+    const existing = load(key);
+    if (Array.isArray(existing)) {
+      const cleaned = existing.filter(item => !isFakeFn(item));
+      save(key, cleaned);
+      return cleaned;
+    }
+    save(key, []);
+    return [];
+  };
+
+  const [tasks, setTasks] = useState(() => initUserStore('tasks', isFakeTask));
+  const [blocks, setBlocks] = useState(() => initUserStore('blocks', isFakeBlock));
+  const [habits, setHabits] = useState(() => initUserStore('habits', isFakeHabit));
+  const [routines, setRoutines] = useState(() => initUserStore('routines', isFakeRoutine));
+  const [journal, setJournal] = useState(() => initUserStore('journal', isFakeJournal));
+  const [reminders, setReminders] = useState(() => initUserStore('reminders', isFakeReminder));
+  const [activity, setActivity] = useState(() => initUserStore('activity', isFakeActivity));
+
+  // Floating reminder alert state
+  const [activeToastReminder, setActiveToastReminder] = useState(null);
+  const alertedIdsRef = useRef(new Set());
+
+  // Persist to user's individual storage key whenever data changes
+  useEffect(() => { save(getUserKey(user.id, 'tasks'), tasks); }, [tasks, user.id]);
+  useEffect(() => { save(getUserKey(user.id, 'blocks'), blocks); }, [blocks, user.id]);
+  useEffect(() => { save(getUserKey(user.id, 'habits'), habits); }, [habits, user.id]);
+  useEffect(() => { save(getUserKey(user.id, 'routines'), routines); }, [routines, user.id]);
+  useEffect(() => { save(getUserKey(user.id, 'journal'), journal); }, [journal, user.id]);
+  useEffect(() => { save(getUserKey(user.id, 'reminders'), reminders); }, [reminders, user.id]);
+  useEffect(() => { save(getUserKey(user.id, 'activity'), activity); }, [activity, user.id]);
+
+  // Purge any fake records across all tabs if previously cached in state
+  useEffect(() => {
+    setTasks(prev => {
+      const clean = prev.filter(t => !isFakeTask(t));
+      if (clean.length !== prev.length) { save(getUserKey(user.id, 'tasks'), clean); return clean; }
+      return prev;
+    });
+    setBlocks(prev => {
+      const clean = prev.filter(b => !isFakeBlock(b));
+      if (clean.length !== prev.length) { save(getUserKey(user.id, 'blocks'), clean); return clean; }
+      return prev;
+    });
+    setHabits(prev => {
+      const clean = prev.filter(h => !isFakeHabit(h));
+      if (clean.length !== prev.length) { save(getUserKey(user.id, 'habits'), clean); return clean; }
+      return prev;
+    });
+    setRoutines(prev => {
+      const clean = prev.filter(r => !isFakeRoutine(r));
+      if (clean.length !== prev.length) { save(getUserKey(user.id, 'routines'), clean); return clean; }
+      return prev;
+    });
+    setJournal(prev => {
+      const clean = prev.filter(j => !isFakeJournal(j));
+      if (clean.length !== prev.length) { save(getUserKey(user.id, 'journal'), clean); return clean; }
+      return prev;
+    });
+    setReminders(prev => {
+      const clean = prev.filter(r => !isFakeReminder(r));
+      if (clean.length !== prev.length) { save(getUserKey(user.id, 'reminders'), clean); return clean; }
+      return prev;
+    });
+    setActivity(prev => {
+      const clean = prev.filter(a => !isFakeActivity(a));
+      if (clean.length !== prev.length) { save(getUserKey(user.id, 'activity'), clean); return clean; }
+      return prev;
+    });
+  }, [user.id]);
+
+  // Central Activity Logger
+  const logActivity = (type, title, icon, details, date) => {
+    const newEntry = {
+      id: uid(),
+      type,
+      title,
+      icon: icon || '✨',
+      details: details || '',
+      date: date || td,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: Date.now()
+    };
+    setActivity(prev => [newEntry, ...prev]);
+  };
+
+  // Toggle Reminder completion
+  const toggleReminder = (id) => {
+    setReminders(prev => prev.map(r => {
+      if (r.id !== id) return r;
+      const isDone = r.status === 'completed';
+      const newStatus = isDone ? 'pending' : 'completed';
+      if (!isDone) {
+        logActivity('reminder', `Completed reminder: "${r.title}"`, '🔔', r.note || 'Marked done');
+      }
+      return { ...r, status: newStatus };
+    }));
+  };
+
+  // Real-time Reminder Monitor (checks every 10 seconds)
+  useEffect(() => {
+    const checkReminders = () => {
+      const now = new Date();
+      const currentIsoMinutes = now.toISOString().slice(0, 16);
+
+      reminders.forEach(r => {
+        if (r.status !== 'pending') return;
+        if (alertedIdsRef.current.has(r.id)) return;
+
+        if (r.datetime && r.datetime <= currentIsoMinutes) {
+          alertedIdsRef.current.add(r.id);
+          setActiveToastReminder(r);
+          playCozyChime();
+
+          if (window.Notification && Notification.permission === 'granted') {
+            try {
+              new Notification(`🔔 Gilded Hours: ${r.title}`, {
+                body: r.note || 'Your scheduled reminder is due now.',
+              });
+            } catch (e) {}
+          }
+        }
+      });
+    };
+
+    checkReminders();
+    const interval = setInterval(checkReminders, 10000);
+    return () => clearInterval(interval);
+  }, [reminders]);
+
+  const navItems = [
+    { key: 'dashboard', icon: '✨', label: 'Dashboard' },
+    { key: 'tasks',     icon: '📋', label: 'Tasks', badge: tasks.filter(t => t.dueDate === td && !t.completed).length || null },
+    { key: 'planner',   icon: '🕐', label: 'Planner' },
+    { key: 'habits',    icon: '🔥', label: 'Habits' },
+    { key: 'routines',  icon: '🔄', label: 'Routines' },
+    { key: 'journal',   icon: '📝', label: 'Journal' },
+    { key: 'reminders', icon: '🔔', label: 'Reminders', badge: reminders.filter(r => r.status === 'pending' && r.datetime?.startsWith(td)).length || null },
+    { key: 'activity',  icon: '📜', label: 'Activity' },
+  ];
+
+  const renderPage = () => {
+    switch (page) {
+      case 'dashboard': return <DashboardPage tasks={tasks} habits={habits} blocks={blocks} routines={routines} journal={journal} reminders={reminders} activity={activity} setPage={setPage} user={user} onToggleReminder={toggleReminder} onOpenProfile={() => setShowProfileModal(true)} />;
+      case 'tasks': return <TasksPage tasks={tasks} setTasks={setTasks} onLogActivity={logActivity} />;
+      case 'planner': return <PlannerPage blocks={blocks} setBlocks={setBlocks} tasks={tasks} onLogActivity={logActivity} />;
+      case 'habits': return <HabitsPage habits={habits} setHabits={setHabits} onLogActivity={logActivity} />;
+      case 'routines': return <RoutinesPage routines={routines} setRoutines={setRoutines} onLogActivity={logActivity} />;
+      case 'journal': return <JournalPage journal={journal} setJournal={setJournal} onLogActivity={logActivity} />;
+      case 'reminders': return <RemindersPage reminders={reminders} setReminders={setReminders} onLogActivity={logActivity} />;
+      case 'activity': return <ActivityPage activity={activity} setActivity={setActivity} tasks={tasks} habits={habits} routines={routines} journal={journal} />;
+      default: return <DashboardPage tasks={tasks} habits={habits} blocks={blocks} routines={routines} journal={journal} reminders={reminders} activity={activity} setPage={setPage} user={user} onToggleReminder={toggleReminder} onOpenProfile={() => setShowProfileModal(true)} />;
+    }
+  };
+
+  return (
+    <div className="app-layout">
+      {/* Desktop Sidebar */}
+      <aside className="sidebar">
+        <div className="sidebar-brand">
+          <div className="sidebar-brand-icon">⏳</div>
+          <h1>Gilded Hours</h1>
+        </div>
+
+        <nav className="sidebar-nav">
+          {navItems.map(item => (
+            <div key={item.key} className={`nav-item ${page === item.key ? 'active' : ''}`} onClick={() => setPage(item.key)}>
+              <span className="nav-icon">{item.icon}</span>
+              <span>{item.label}</span>
+              {item.badge && <span className="nav-badge">{item.badge}</span>}
+            </div>
+          ))}
+        </nav>
+
+        {/* User profile card in sidebar */}
+        <div
+          className="user-sidebar-profile"
+          onClick={() => setShowProfileModal(true)}
+          title="Click to customize profile & avatar"
+        >
+          <UserAvatar avatar={user.avatar || '✨'} size={36} />
+          <div className="user-sidebar-info">
+            <div className="user-sidebar-name" title={user.name}>{user.name}</div>
+            <div className="user-sidebar-handle">@{user.username || user.email?.split('@')[0]}</div>
+          </div>
+          <button
+            type="button"
+            className="user-sidebar-gear"
+            onClick={(e) => { e.stopPropagation(); setShowProfileModal(true); }}
+            title="Customize Profile & Sanctuary"
+          >
+            ⚙️
+          </button>
+          <button
+            type="button"
+            className="user-sidebar-logout"
+            onClick={(e) => { e.stopPropagation(); onLogout(); }}
+            title="Sign out"
+            style={{marginLeft:2}}
+          >
+            🚪
+          </button>
+        </div>
+      </aside>
+
+      {/* Mobile Bottom Nav */}
+      <nav className="mobile-nav">
+        {navItems.map(item => (
+          <div key={item.key} className={`mobile-nav-item ${page === item.key ? 'active' : ''}`} onClick={() => setPage(item.key)}>
+            <span className="nav-icon">{item.icon}</span>
+            <span>{item.label}</span>
+          </div>
+        ))}
+      </nav>
+
+      {/* Main Content */}
+      <main className="main-content">
+        {/* Mobile top bar for user greeting & sign out */}
+        <div className="mobile-top-bar">
+          <div
+            style={{display:'flex', alignItems:'center', gap:10, cursor:'pointer'}}
+            onClick={() => setShowProfileModal(true)}
+            title="Customize profile & avatar"
+          >
+            <UserAvatar avatar={user.avatar || '✨'} size={32} />
+            <div>
+              <div style={{fontWeight:600, fontSize:'0.88rem'}}>{user.name}</div>
+              <div style={{fontSize:'0.72rem', color:'var(--text-muted)'}}>@{user.username}</div>
+            </div>
+          </div>
+          <div style={{display:'flex', gap:6, alignItems:'center'}}>
+            <button className="btn btn-secondary btn-sm" onClick={() => setShowProfileModal(true)} style={{padding:'5px 10px'}}>
+              ⚙️ Profile
+            </button>
+            <button className="btn btn-secondary btn-sm" onClick={onLogout} style={{padding:'5px 10px', gap:4}}>
+              🚪
+            </button>
+          </div>
+        </div>
+
+        {renderPage()}
+
+        {/* Real-time Reminder Alert Toast */}
+        {activeToastReminder && (
+          <div className="reminder-toast-container">
+            <div className="reminder-toast">
+              <div className="reminder-toast-header">
+                <span style={{fontSize:'1.3rem'}}>🔔</span>
+                <div className="reminder-toast-title">Reminder Due Now</div>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  style={{marginLeft:'auto', padding:'2px 6px'}}
+                  onClick={() => setActiveToastReminder(null)}
+                >
+                  ✕
+                </button>
+              </div>
+              <div style={{fontWeight:600, fontSize:'0.95rem', marginBottom:4}}>
+                {activeToastReminder.title}
+              </div>
+              {activeToastReminder.note && (
+                <div style={{fontSize:'0.82rem', color:'var(--text-secondary)', marginBottom:8}}>
+                  {activeToastReminder.note}
+                </div>
+              )}
+              <div className="reminder-toast-actions">
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={() => {
+                    toggleReminder(activeToastReminder.id);
+                    setActiveToastReminder(null);
+                  }}
+                >
+                  ✓ Mark Done
+                </button>
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => {
+                    const now = new Date();
+                    now.setMinutes(now.getMinutes() + 10);
+                    const newDt = now.toISOString().slice(0, 16);
+                    setReminders(prev => prev.map(r => r.id === activeToastReminder.id ? { ...r, datetime: newDt } : r));
+                    logActivity('reminder', `Snoozed reminder: "${activeToastReminder.title}" (+10m)`, '⏰');
+                    alertedIdsRef.current.delete(activeToastReminder.id);
+                    setActiveToastReminder(null);
+                  }}
+                >
+                  ⏰ Snooze 10m
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Profile & Avatar Customization Modal */}
+        <ProfileModal
+          open={showProfileModal}
+          onClose={() => setShowProfileModal(false)}
+          user={user}
+          onUpdateUser={onUpdateUser}
+          onLogActivity={logActivity}
+        />
+      </main>
+    </div>
+  );
+}
+
+// ===== ROOT APP WITH AUTH ROUTING =====
+function App() {
+  const [currentUser, setCurrentUser] = useState(() => getActiveUser());
+
+  useEffect(() => {
+    if (currentUser?.themeAccent) {
+      applyThemeAccent(currentUser.themeAccent);
+    }
+  }, [currentUser?.themeAccent]);
+
+  const handleLogin = (user) => {
+    // Purge any fake starter data across all tabs for this user on login
+    purgeAllFakeUserData(user.id);
+
+    localStorage.setItem(AUTH_ACTIVE_USER_KEY, JSON.stringify(user));
+    if (user.themeAccent) {
+      applyThemeAccent(user.themeAccent);
+    }
+    setCurrentUser(user);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem(AUTH_ACTIVE_USER_KEY);
+    setCurrentUser(null);
+  };
+
+  const handleUpdateUser = (updatedUser) => {
+    // 1. Update in registered users registry
+    const users = getRegisteredUsers();
+    const idx = users.findIndex(u => u.id === updatedUser.id);
+    if (idx !== -1) {
+      users[idx] = updatedUser;
+    } else {
+      users.push(updatedUser);
+    }
+    saveRegisteredUsers(users);
+
+    // 2. Update active user session
+    localStorage.setItem(AUTH_ACTIVE_USER_KEY, JSON.stringify(updatedUser));
+
+    // 3. Update React state
+    setCurrentUser(updatedUser);
+  };
+
+  if (!currentUser) {
+    return <AuthScreen onLogin={handleLogin} />;
+  }
+
+  return (
+    <AuthenticatedApp
+      key={currentUser.id}
+      user={currentUser}
+      onLogout={handleLogout}
+      onUpdateUser={handleUpdateUser}
+    />
+  );
+}
+
+// ===== MOUNT =====
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>

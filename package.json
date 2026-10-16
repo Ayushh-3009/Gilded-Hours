@@ -1,0 +1,21 @@
+{
+  "name": "gilded-hours",
+  "version": "1.0.0",
+  "description": "Gilded Hours — Cozy All-in-One Planner, Habits, Routines, and Daily Reflection Sanctuary",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 3000"
+  },
+  "keywords": [
+    "planner",
+    "productivity",
+    "habits",
+    "routines",
+    "journal",
+    "sanctuary",
+    "cozy",
+    "black-violet"
+  ],
+  "author": "Aadhanya",
+  "license": "MIT"
+}
